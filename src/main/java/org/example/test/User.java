@@ -1,4 +1,4 @@
-package org.example.fanxing;
+package org.example.test;
 
 /**
  * 用户类 - 用于 DAO 示例

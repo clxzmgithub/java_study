@@ -1,4 +1,4 @@
-package org.example.fanxing;
+package org.example.test;
 
 /**
  * 人物类

@@ -1,4 +1,4 @@
-package org.example.fanxing;
+package org.example.test;
 
 import java.util.List;
 

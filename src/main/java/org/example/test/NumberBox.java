@@ -1,4 +1,4 @@
-package org.example.fanxing;
+package org.example.test;
 
 /**
  * 泛型上界限制示例 - NumberBox
