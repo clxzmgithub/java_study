@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * 人物类

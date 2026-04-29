@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * MySQL NULL 值问题分析

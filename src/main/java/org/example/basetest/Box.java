@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * 泛型类示例 - Box

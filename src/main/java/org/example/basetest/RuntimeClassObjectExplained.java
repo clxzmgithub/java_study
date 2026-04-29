@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * 深度理解："返回当前运行时对象的 Class 对象" 是什么意思
@@ -222,7 +222,7 @@ public class RuntimeClassObjectExplained {
         System.out.println("保存时：");
         String data = "Hello World";
         System.out.println("  对象类型：" + data.getClass().getName());
-        System.out.println("  (保存到文件：org.example.test.RuntimeClassObjectExplained...");
+        System.out.println("  (保存到文件：org.example.basetest.RuntimeClassObjectExplained...");
         System.out.println("   ...String...\\\"Hello World\\\")");
 
         System.out.println("\n读取时：");

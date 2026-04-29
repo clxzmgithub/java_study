@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * 静态方法 vs 非静态成员的深度分析

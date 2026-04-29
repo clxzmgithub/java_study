@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * NOT NULL + 默认值 vs NULL 的详细对比

@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 /**
  * Java 三种资源（数据库连接、文件流、网络连接）详解

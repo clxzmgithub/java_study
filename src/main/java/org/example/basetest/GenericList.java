@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

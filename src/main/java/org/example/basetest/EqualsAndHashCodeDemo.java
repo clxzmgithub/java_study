@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.basetest;
 
 import java.util.HashMap;
 import java.util.HashSet;
