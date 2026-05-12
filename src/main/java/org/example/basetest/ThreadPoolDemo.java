@@ -38,6 +38,9 @@ public class ThreadPoolDemo {
 
         sep("第七部分：最佳实践");
         Part7_BestPractice.run();
+
+        sep("第八部分：CallerRunsPolicy 具体场景演示");
+        Part8_CallerRunsPolicy.run();
     }
 
     static void sep(String title) {
@@ -702,6 +705,220 @@ class Part7_BestPractice {
         System.out.println("\n  当前机器 CPU 核数：" + cpuCores);
         System.out.println("  推荐 IO 密集型线程数：" + (cpuCores * 2) + " ~ " + (cpuCores * 4));
         System.out.println("  推荐 CPU 密集型线程数：" + (cpuCores + 1));
+    }
+}
+
+// ====================================================================
+// 第八部分：CallerRunsPolicy 具体场景演示
+// ====================================================================
+class Part8_CallerRunsPolicy {
+
+    static void run() throws Exception {
+        System.out.println("【一、四种拒绝策略对比】\n");
+        System.out.println("  触发时机：线程数已达 maxPoolSize 且队列已满，再来新任务时触发拒绝策略\n");
+        System.out.println("  ┌─────────────────────────┬──────────────────────────────────────────────┐");
+        System.out.println("  │ 策略                    │ 行为                                         │");
+        System.out.println("  ├─────────────────────────┼──────────────────────────────────────────────┤");
+        System.out.println("  │ AbortPolicy（默认）      │ 直接抛出 RejectedExecutionException，任务丢弃  │");
+        System.out.println("  │ DiscardPolicy            │ 静默丢弃新任务，不报错                        │");
+        System.out.println("  │ DiscardOldestPolicy      │ 丢弃队列头部最老的任务，腾位置给新任务          │");
+        System.out.println("  │ CallerRunsPolicy ★      │ 由提交任务的线程自己来执行这个任务              │");
+        System.out.println("  └─────────────────────────┴──────────────────────────────────────────────┘");
+        System.out.println();
+
+        System.out.println("【二、CallerRunsPolicy 的核心机制】\n");
+        System.out.println("  源码（极其简单，只有两行核心逻辑）：");
+        System.out.println("  ┌─────────────────────────────────────────────────────────────┐");
+        System.out.println("  │  public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {");
+        System.out.println("  │      if (!e.isShutdown()) {   // 线程池还活着才执行");
+        System.out.println("  │          r.run();             // 注意：直接 run()，不是 start()！");
+        System.out.println("  │      }                        // 由调用者线程同步执行，不开新线程");
+        System.out.println("  │  }");
+        System.out.println("  └─────────────────────────────────────────────────────────────┘");
+        System.out.println("  关键点：r.run() 而非 new Thread(r).start()");
+        System.out.println("         任务在「提交者线程」上直接执行，不创建新线程，完全同步");
+        System.out.println();
+
+        System.out.println("【三、实际运行演示】\n");
+        demo_CallerRunsPolicy();
+
+        System.out.println("\n【四、CallerRunsPolicy 的天然限流效果】\n");
+        demo_NaturalThrottling();
+
+        System.out.println("\n【五、对比：AbortPolicy 的效果（会丢任务）】\n");
+        demo_AbortPolicyContrast();
+
+        System.out.println("\n【六、适用场景与注意事项】\n");
+        printUsageGuide();
+    }
+
+    // ----------------------------------------------------------------
+    // 演示三：CallerRunsPolicy 运行时行为
+    // ----------------------------------------------------------------
+    static void demo_CallerRunsPolicy() throws InterruptedException {
+        System.out.println("  配置：corePool=2, maxPool=2, queue=3, 策略=CallerRunsPolicy");
+        System.out.println("  提交8个任务，前5个（2线程+3队列）正常处理，第6~8个触发CallerRunsPolicy\n");
+
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(
+                2,                              // corePoolSize=2
+                2,                              // maxPoolSize=2（故意设小，容易触发拒绝）
+                0L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(3),    // 队列容量=3，共能容纳2+3=5个任务
+                r -> new Thread(r, "pool-thread"),
+                new ThreadPoolExecutor.CallerRunsPolicy()  // 关键：调用者执行
+        );
+
+        for (int i = 1; i <= 8; i++) {
+            final int id = i;
+            System.out.printf("  [主线程] 提交任务 #%d%n", id);
+
+            pool.execute(() -> {
+                String threadName = Thread.currentThread().getName();
+                System.out.printf("  [%s] 执行任务 #%d  %s%n",
+                        threadName, id,
+                        threadName.equals("main") ? "← ★ CallerRunsPolicy：由主线程执行！" : "");
+                try { Thread.sleep(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            });
+
+            // 任务5之后稍微停一下，让效果更清晰
+            if (id == 5) {
+                System.out.println("  ── 队列已满（2线程+3队列=5），接下来的任务将触发拒绝策略 ──");
+            }
+        }
+
+        pool.shutdown();
+        pool.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.println("\n  所有8个任务全部完成（CallerRunsPolicy 不丢任务）✓");
+    }
+
+    // ----------------------------------------------------------------
+    // 演示四：天然限流效果
+    // ----------------------------------------------------------------
+    static void demo_NaturalThrottling() throws InterruptedException {
+        System.out.println("  CallerRunsPolicy 的「反压」效果：");
+        System.out.println("  当主线程自己在执行任务时，它无法继续提交新任务 → 天然减慢提交速度\n");
+
+        System.out.println("  正常情况（无拒绝）：主线程飞速提交，工作线程追不上，队列积压");
+        System.out.println("  CallerRunsPolicy：主线程被迫执行任务，提交节奏自动降速，与消费同步\n");
+
+        System.out.println("  时序图：");
+        System.out.println("  ┌──────────────────────────────────────────────────────────────────┐");
+        System.out.println("  │  时间 →                                                          │");
+        System.out.println("  │                                                                  │");
+        System.out.println("  │  主线程：[提交1][提交2][提交3][提交4][提交5][被迫执行6][提交7]...│");
+        System.out.println("  │                                            ↑                    │");
+        System.out.println("  │                                     这段时间主线程              │");
+        System.out.println("  │                                     在执行任务，无法提交新任务  │");
+        System.out.println("  │                                     → 生产速度自动降下来了      │");
+        System.out.println("  │                                                                  │");
+        System.out.println("  │  工作线程1：    [执行1]      [执行3]      [执行5]      [执行7]  │");
+        System.out.println("  │  工作线程2：         [执行2]      [执行4]      ...               │");
+        System.out.println("  └──────────────────────────────────────────────────────────────────┘");
+        System.out.println();
+
+        // 实际计时演示
+        System.out.println("  实际计时演示（核心=1，队列=1，任务每个耗时100ms）：");
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(
+                1, 1, 0L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(1),
+                r -> new Thread(r, "worker"),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+
+        long start = System.currentTimeMillis();
+        for (int i = 1; i <= 4; i++) {
+            final int id = i;
+            long submitTime = System.currentTimeMillis() - start;
+            System.out.printf("  +%3dms [主线程] 提交任务 #%d%n", submitTime, id);
+            pool.execute(() -> {
+                long execTime = System.currentTimeMillis() - start;
+                System.out.printf("  +%3dms [%s] 开始执行 #%d%n",
+                        execTime, Thread.currentThread().getName(), id);
+                try { Thread.sleep(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                long endTime = System.currentTimeMillis() - start;
+                System.out.printf("  +%3dms [%s] 完成 #%d%n",
+                        endTime, Thread.currentThread().getName(), id);
+            });
+        }
+
+        pool.shutdown();
+        pool.awaitTermination(10, TimeUnit.SECONDS);
+        long total = System.currentTimeMillis() - start;
+        System.out.printf("%n  总耗时：%dms（主线程被「强制」参与执行，自然限制了提交速度）%n", total);
+    }
+
+    // ----------------------------------------------------------------
+    // 演示五：AbortPolicy 对比（会丢任务）
+    // ----------------------------------------------------------------
+    static void demo_AbortPolicyContrast() throws InterruptedException {
+        System.out.println("  同样的配置，换成 AbortPolicy（默认），看看任务是否会丢失：");
+        System.out.println("  配置：corePool=2, maxPool=2, queue=3，提交8个任务\n");
+
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(
+                2, 2, 0L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(3),
+                r -> new Thread(r, "pool-thread"),
+                new ThreadPoolExecutor.AbortPolicy()  // 默认策略
+        );
+
+        AtomicInteger submitted = new AtomicInteger(0);
+        AtomicInteger rejected  = new AtomicInteger(0);
+        AtomicInteger completed = new AtomicInteger(0);
+
+        for (int i = 1; i <= 8; i++) {
+            final int id = i;
+            try {
+                pool.execute(() -> {
+                    try { Thread.sleep(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                    completed.incrementAndGet();
+                });
+                submitted.incrementAndGet();
+                System.out.printf("  任务 #%d 提交成功%n", id);
+            } catch (RejectedExecutionException e) {
+                rejected.incrementAndGet();
+                System.out.printf("  任务 #%d 被拒绝！RejectedExecutionException ← 任务永久丢失%n", id);
+            }
+        }
+
+        pool.shutdown();
+        pool.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.printf("%n  结果：提交成功=%d，被拒绝=%d，实际完成=%d%n",
+                submitted.get(), rejected.get(), completed.get());
+        System.out.println("  ★ AbortPolicy：被拒绝的任务直接丢弃，无法找回！");
+        System.out.println("  ★ CallerRunsPolicy：所有任务都会被执行，一个不少！");
+    }
+
+    // ----------------------------------------------------------------
+    // 使用场景指南
+    // ----------------------------------------------------------------
+    static void printUsageGuide() {
+        System.out.println("  ✅ 适合用 CallerRunsPolicy 的场景：");
+        System.out.println();
+        System.out.println("  1. 任务不能丢失的场景");
+        System.out.println("     比如：下订单、记录日志、发送通知");
+        System.out.println("     AbortPolicy/DiscardPolicy 都会丢任务，CallerRunsPolicy 保证执行");
+        System.out.println();
+        System.out.println("  2. 需要天然限流/反压的场景");
+        System.out.println("     生产者（主线程）被迫执行任务 → 自动降低提交速度 → 消费端不会被压垮");
+        System.out.println("     无需额外的限流组件，简单优雅");
+        System.out.println();
+        System.out.println("  3. 批量数据处理");
+        System.out.println("     比如：批量导入100万条数据，线程池满了让调用者自己处理，");
+        System.out.println("     既不丢数据，又不会把内存撑爆");
+        System.out.println();
+        System.out.println("  ❌ 不适合用 CallerRunsPolicy 的场景：");
+        System.out.println();
+        System.out.println("  1. 调用者线程不能被阻塞的场景");
+        System.out.println("     比如：Netty 的 IO 线程、Web 容器的请求处理线程");
+        System.out.println("     这些线程被占用会导致整个系统无法接收新请求，造成「雪崩」");
+        System.out.println();
+        System.out.println("  2. 调用者线程执行任务会有权限/上下文问题");
+        System.out.println("     有些任务依赖特定线程的上下文（如数据库连接绑定），");
+        System.out.println("     在主线程执行可能出现上下文缺失问题");
+        System.out.println();
+        System.out.println("  ⚡ 记忆口诀：");
+        System.out.println("     「谁提交，谁负责」—— 提交不了就自己执行，任务不丢，速度自降");
+        System.out.println("     「快递爆仓了，快递员让你自己去取」—— 系统过载时把压力反推给调用方");
     }
 }
 
