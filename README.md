@@ -1,15 +1,34 @@
-# Java + 计算机基础理论 学习项目
+# 📚 Java + 计算机基础理论 学习项目
 
-系统性学习 Java 核心知识体系与计算机基础理论，按「先打地基 → 再学工具 → 最后看工业实践」的顺序递进。
+<div align="center">
 
-> **项目定位说明**
-> - 本项目（`java_study`）：专注 Java 语言核心 + 计算机基础理论
-> - `java_fullstack_ai_agent_study`（待建）：Java 全栈 + AI 与 Agent 工程学习
-> - `ai_coding_harness_engineering_study`（待建）：AI Coding Harness 工程实践
+![Status](https://img.shields.io/badge/状态-持续更新中-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Java](https://img.shields.io/badge/Java-17%2B-orange)
+
+</div>
 
 ---
 
-## 学习模块总览
+## 📌 项目定位
+
+本项目是三个关联学习工程中的**基础理论层**，专注 Java 语言核心机制与计算机基础理论。
+
+目标是把「知其然」变成「知其所以然」——在学 Spring、分布式、大数据之前，先把 Java 语言本身、IO 体系、并发模型，以及操作系统、计算机网络、计算机原理、编译原理等底层基础打牢。没有这层地基，工程实践中遇到问题只能靠搜索和猜测，而不是真正理解。
+
+> ⚠️ **关联项目分工说明**
+>
+> 本人维护三个相互补充、各有侧重的学习仓库，共同构成完整的知识体系：
+>
+> | 项目 | 定位 | 核心聚焦 |
+> |------|:----:|---------|
+> | **本项目**（`java_study`） | 🔵 基础理论 | Java 语言核心、数据结构与算法、IO/NIO 体系、操作系统、计算机网络、计算机原理、编译原理——**打地基** |
+> | [`java_fullstack_ai_agent_study`](../java_fullstack_ai_agent_study) | 🟠 工程实践 | Spring 生态、分布式架构、大数据、存储中间件、风控爬虫、数据分析、多语言、AI/Agent——**做系统** |
+> | [`ai_coding_harness_engineering_study`](../ai_coding_harness_engineering_study) | 🟣 AI 工程 | AI 编程方法论、上下文工程、Harness 理论、AI Coding 工具链、大模型与 Agent 开发——**用 AI 提效** |
+
+---
+
+## 🗺️ 学习模块总览
 
 ```
 java_study/
@@ -30,15 +49,38 @@ java_study/
 │
 ├── operate_system/                  计算机基础理论
 ├── compute_network/                   ├─ 操作系统
-└── computer_principle/                ├─ 计算机网络
-                                       └─ 计算机原理
+├── computer_principle/                ├─ 计算机网络
+└── compiler_principle/                ├─ 计算机原理
+                                       └─ 编译原理
 ```
 
 各模块详细说明见对应目录下的 README.md。
 
 ---
 
-## 推荐学习顺序
+## 📊 学习进度
+
+> 各模块学习状态持续更新。
+
+| 模块 | 状态 | 开始时间 | 备注 |
+|------|:----:|---------|------|
+| Java 语言基础 | 🔥 进行中 | 2025-05 | 泛型/反射/集合/内部类等 |
+| IO / NIO 体系 | 🔥 进行中 | 2025-05 | Part1~Part23，七层递进 |
+| 多线程 & 异步 | 🔥 进行中 | 2025-05 | 线程池/ThreadLocal/CompletableFuture |
+| 代理模式 & AOP | 🔥 进行中 | 2025-05 | JDK动态代理/CGLIB/Spring AOP |
+| 数据结构 | 🔜 待开始 | - | |
+| 算法 | 🔜 待开始 | - | |
+| 设计模式 | 🔜 待开始 | - | |
+| 操作系统 | 🔜 待开始 | - | 穿插学习 |
+| 计算机网络 | 🔜 待开始 | - | 穿插学习 |
+| 计算机原理 | 🔜 待开始 | - | 穿插学习 |
+| 编译原理 | 🔜 待开始 | - | 了解为主，打好概念基础 |
+
+> 状态说明：🔜 待开始 ｜ 🔥 进行中 ｜ ✅ 已完成 ｜ ⏸️ 暂停
+
+---
+
+## 📖 推荐学习顺序
 
 ### 第一阶段：Java 语言地基
 > 目标：把 Java 语言本身的核心机制吃透，后面学框架才不会「知其然不知其所以然」
@@ -104,7 +146,7 @@ Netty 框架：核心架构 / 粘包拆包 / Echo·HTTP Server 实战
 ---
 
 ### 第四阶段：计算机基础理论（穿插学习）
-> 目标：理解 Java 底层行为的硬件/OS 根因，不是单独学，而是遇到疑问时对照查
+> 目标：理解程序运行的底层根因，不是单独学，而是遇到疑问时对照查
 
 | 遇到这个问题时 | 去看这个模块 |
 |--------------|------------|
@@ -113,10 +155,16 @@ Netty 框架：核心架构 / 粘包拆包 / Echo·HTTP Server 实战
 | TCP 粘包/拆包是什么？为什么 Netty 要做 FrameDecoder？ | `compute_network/`（传输层） |
 | volatile 为什么能保证可见性？DCL 为什么要加 volatile？ | `computer_principle/`（内存屏障） |
 | DMA 是什么？零拷贝为什么说「2次DMA拷贝，0次CPU拷贝」？ | `computer_principle/`（总线&DMA） |
+| javac 怎么把源码变成字节码？JIT 是什么？词法/语法分析怎么工作？ | `compiler_principle/` |
+
+> 📌 **关于编译原理**
+> 编译原理是计算机与软件领域最核心的基础理论课之一，涵盖词法分析、语法分析、语义分析、中间代码生成、代码优化、目标代码生成等完整流程。
+> 理解编译原理能让你真正看懂 JVM 的字节码编译（javac）、JIT 即时编译、注解处理器（APT）、Lombok 等工具的工作原理，也是理解 LLM 如何「理解」代码的重要基础。
+> 本项目已建立该模块目录（`compiler_principle/`），代码内容后续视学习进度补充。
 
 ---
 
-## 运行方式
+## 🚀 运行方式
 
 ```bash
 # 编译整个项目
@@ -127,4 +175,33 @@ java -cp target/classes org.example.java_base_test.io.nio.NIODemo
 
 # 运行多 Agent 系统演示
 java -cp target/classes org.example.java_base_test.multi_agent.MultiAgentDemo
+```
+
+---
+
+## 📝 更新记录
+
+| 日期 | 更新内容 |
+|------|---------|
+| 2025-05 | 初始化项目，建立基础目录结构 |
+| 2025-05 | 完成 IO/NIO 全体系（Part1~Part23），含七层递进路线图与生活场景类比 |
+| 2025-05 | 新增多 Agent 系统架构演示（`multi_agent/`），Orchestrator-Worker 模式 |
+| 2025-05 | 重构 NIODemo 为多 Agent 模式（`io/nio/show_multi_agent/`），23个Part拆分为独立文件 |
+| 2025-05 | 建立各模块 README，新增编译原理模块（`compiler_principle/`） |
+
+---
+
+## 🔗 关联项目
+
+| 项目 | 定位 | 内容 |
+|------|------|------|
+| **本项目**（`java_study`） | 基础理论 | Java 语言核心、数据结构与算法、IO/NIO 体系、操作系统、计算机网络、计算机原理、编译原理 |
+| [`java_fullstack_ai_agent_study`](../java_fullstack_ai_agent_study) | 工程实践 | Spring 生态、分布式架构、大数据生态、存储中间件、多语言、前端、AI/Agent 工程化 |
+| [`ai_coding_harness_engineering_study`](../ai_coding_harness_engineering_study) | AI 工程 | AI 编程、Harness 工程理论、AI Coding 工具链、大模型应用及 Agent 开发知识沉淀 |
+
+---
+
+<div align="center">
+  <sub>持续更新中 🚀 · 打好地基，才能盖高楼</sub>
+</div>
 
