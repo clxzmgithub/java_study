@@ -1,0 +1,117 @@
+package org.example.java_base_test.io.nio.show_multi_agent;
+
+class Part12_KafkaNginxCases {
+
+    static void explain() {
+        System.out.println("【第十二部分：Kafka & Nginx 案例——零拷贝的实际应用】");
+        System.out.println();
+        System.out.println("═══ 🏭 生活场景：超级仓库的高效发货秘密 ═══");
+        System.out.println();
+        System.out.println("  Kafka/Nginx 的 IO 设计就像世界一流的物流仓库运作方式：");
+        System.out.println();
+        System.out.println("  【Kafka = 亚马逊仓库（高吞吐消息队列）】");
+        System.out.println("  秘密1「顺序收货」：所有货物（消息）只追加到货架尾端");
+        System.out.println("    不乱插，不随机放 = 磁盘顺序写（600MB/s）");
+        System.out.println("    vs 随机写（100KB/s），差了6000倍！");
+        System.out.println("    就像流水线作业 vs 东翻西找，效率天差地别");
+        System.out.println();
+        System.out.println("  秘密2「暂存室中转」：货物先放暂存室（Page Cache），不直接上货架");
+        System.out.println("    暂存室是内存，极快！货架是磁盘，慢");
+        System.out.println("    仓库工人（OS）闲时把暂存室货物整理到货架（异步刷盘）");
+        System.out.println("    顾客不用等上架，秒收货！");
+        System.out.println();
+        System.out.println("  秘密3「直发模式」：顾客来取货，仓库直接把货架地址告诉快递员");
+        System.out.println("    快递员（DMA）自己去取，不需要工人（CPU）搬进搬出");
+        System.out.println("    这就是 sendfile 零拷贝，Kafka官方数据：吞吐量提升6倍！");
+        System.out.println();
+        System.out.println("  【Nginx = 便利店（高并发静态资源）】");
+        System.out.println("  Nginx 发静态文件 = 便利店把货直接从仓库传送带发给顾客");
+        System.out.println("  Java Spring 发静态文件 = 服务员把货搬到柜台再给顾客（多了CPU搬运）");
+        System.out.println("  → 静态资源放CDN或Nginx，别让Java服务直接发！");
+        System.out.println();
+        System.out.println("═══ 以下是技术细节 ═══");
+        System.out.println();
+
+        System.out.println("一、Kafka 高吞吐的秘密");
+        System.out.println();
+        System.out.println("  Kafka 写入（Producer → Broker）：");
+        System.out.println("    1. 数据进入 Socket 接收缓冲区（内核）");
+        System.out.println("    2. Broker 从 Socket 读数据（进用户空间）");
+        System.out.println("    3. 写入 Page Cache（内核）← 不直接写磁盘！");
+        System.out.println("    4. OS 异步顺序刷盘");
+        System.out.println();
+        System.out.println("  为什么顺序写这么快？");
+        System.out.println("    机械磁盘顺序写：~600 MB/s");
+        System.out.println("    机械磁盘随机写：~100 KB/s （差了 6000 倍！）");
+        System.out.println("    Kafka Log 文件只追加写，永远是顺序写");
+        System.out.println();
+        System.out.println("  Kafka 发送（Broker → Consumer）：");
+        System.out.println("    传统做法：磁盘→PageCache(DMA)→用户空间(CPU拷贝)→Socket(CPU拷贝)→网卡(DMA)");
+        System.out.println("             2次 CPU 拷贝 + 4次上下文切换");
+        System.out.println();
+        System.out.println("    Kafka 做法（零拷贝）：");
+        System.out.println("    磁盘 → Page Cache（DMA 拷贝）");
+        System.out.println("    Page Cache → 网卡（sendfile，0次 CPU 拷贝）");
+        System.out.println("    合计：0次 CPU 拷贝 + 2次上下文切换");
+        System.out.println();
+        System.out.println("  Kafka 源码（FileRecords.java）核心就一行：");
+        System.out.println("    public long writeTo(GatheringByteChannel destChannel,");
+        System.out.println("                        long offset, int length) {");
+        System.out.println("        return channel.transferTo(offset,");
+        System.out.println("                   Math.min(length, size()), destChannel);");
+        System.out.println("    }");
+        System.out.println();
+        System.out.println("  Kafka 官方数据：同硬件，零拷贝吞吐量是传统的 6 倍！");
+        System.out.println();
+
+        System.out.println("二、Nginx 的事件驱动模型");
+        System.out.println();
+        System.out.println("  Nginx vs Apache 根本区别：");
+        System.out.println("    Apache（类 BIO）：1请求 = 1进程/线程");
+        System.out.println("      1000并发 → 1000进程 → 1000×8MB = 8GB（直接崩）");
+        System.out.println();
+        System.out.println("    Nginx（事件驱动，类 NIO）：");
+        System.out.println("      Worker 进程数 = CPU 核数（通常4~8个）");
+        System.out.println("      每个 Worker 一个事件循环（类似 Selector）");
+        System.out.println("      1000并发 → 4个进程处理 → 内存：4 × 几MB");
+        System.out.println();
+        System.out.println("  Nginx 处理一个 HTTP 静态文件请求：");
+        System.out.println("    ① accept() 新连接，注册到 epoll（非阻塞）");
+        System.out.println("    ② epoll_wait 返回：「这个连接有数据」");
+        System.out.println("    ③ read() 读取 HTTP 请求头");
+        System.out.println("    ④ 解析 URL，找到静态文件路径");
+        System.out.println("    ⑤ open() 文件，得到 fd");
+        System.out.println("    ⑥ sendfile(socket_fd, file_fd, ...)  ← 零拷贝！");
+        System.out.println("    ⑦ 发送完毕，关闭连接");
+        System.out.println("    ⑧ 回到 ② 处理下一个事件");
+        System.out.println("    全程单线程，无阻塞");
+        System.out.println();
+        System.out.println("  为什么 Nginx 发静态资源性能远超 Java Spring MVC？");
+        System.out.println();
+        System.out.println("    Java Spring MVC 发静态文件：");
+        System.out.println("      磁盘→PageCache(DMA)→JVM堆(CPU拷贝)→Socket缓冲区(CPU拷贝)→网卡(DMA)");
+        System.out.println("      2次 CPU 拷贝 + 4次上下文切换");
+        System.out.println();
+        System.out.println("    Nginx 发静态文件：");
+        System.out.println("      磁盘→PageCache(DMA)→网卡(sendfile，0次CPU拷贝)");
+        System.out.println("      0次 CPU 拷贝 + 2次上下文切换");
+        System.out.println();
+        System.out.println("    → 结论：静态资源要放 CDN 或 Nginx，不要让 Java 服务直接发！");
+        System.out.println();
+
+        System.out.println("三、RocketMQ 的 MappedByteBuffer（mmap）");
+        System.out.println();
+        System.out.println("  CommitLog 写入：mmap 将文件映射到内存");
+        System.out.println("    写数据 = 直接写内存地址 → OS 自动同步到磁盘");
+        System.out.println("    省去了传统的 write() 系统调用 + 内核缓冲区拷贝");
+        System.out.println();
+        System.out.println("  vs Kafka 的区别：");
+        System.out.println("    Kafka：读路径用 transferTo（sendfile）");
+        System.out.println("    RocketMQ：写路径用 mmap（更快，适合高频写）");
+        System.out.println("    读路径也用 mmap（零 CPU 拷贝地将文件数据暴露给应用）");
+        System.out.println();
+        System.out.println("────────────────────────────────────────────────────────────");
+        System.out.println();
+    }
+}
+

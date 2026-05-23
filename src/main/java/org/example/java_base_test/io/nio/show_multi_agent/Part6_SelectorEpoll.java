@@ -1,0 +1,84 @@
+package org.example.java_base_test.io.nio.show_multi_agent;
+
+class Part6_SelectorEpoll {
+
+    static void explain() {
+        System.out.println("【第六部分：Selector + epoll 工作原理】");
+        System.out.println();
+        System.out.println("═══ 🍽️ 生活场景：餐厅取号系统 理解 Selector+epoll ═══");
+        System.out.println();
+        System.out.println("  想象一家超级火爆的餐厅，同时有1000桌客人在等候：");
+        System.out.println();
+        System.out.println("  【老方案 select/poll = 服务员轮流问每桌】");
+        System.out.println("    服务员从第1桌到第1000桌，挨个问：「你要点菜了吗？」");
+        System.out.println("    大多数桌还没准备好，但还是要问一遍");
+        System.out.println("    1000桌全问完一轮 → 才能知道谁准备好了");
+        System.out.println("    客人越多，轮一圈越慢 → 这就是 O(n) 的问题");
+        System.out.println();
+        System.out.println("  【新方案 epoll = 餐厅取号+呼叫器系统】");
+        System.out.println("    每桌客人拿到一个呼叫器（fd 注册到 epoll）");
+        System.out.println("    服务员（线程）只管坐在前台休息（epoll_wait 休眠）");
+        System.out.println("    哪桌准备好了，呼叫器自动响（内核硬件中断 → 就绪链表）");
+        System.out.println("    服务员只去响了的那桌（只处理就绪的 fd）");
+        System.out.println("    1000桌只有5桌准备好了 → 服务员只跑5趟！O(1)");
+        System.out.println();
+        System.out.println("  【Selector 就是这个「呼叫器管理中心」】");
+        System.out.println("    channel.register(selector, OP_READ)  = 给这桌发呼叫器");
+        System.out.println("    selector.select()                     = 服务员坐着等");
+        System.out.println("    selectedKeys()                        = 当前响了的呼叫器列表");
+        System.out.println();
+        System.out.println("  【重要理解：select() 的「阻塞」≠ 傻等】");
+        System.out.println("    服务员等呼叫器响 = 睡觉（CPU利用率接近0%，省电！）");
+        System.out.println("    不是服务员站着等（那是非阻塞轮询，浪费体力/CPU）");
+        System.out.println("    和 Thread.sleep() 一样，都是真正休眠，被动等待唤醒");
+        System.out.println();
+        System.out.println("═══ 以下是 epoll 的技术细节 ═══");
+        System.out.println();
+        System.out.println("核心问题：selector.select() 为什么会阻塞？");
+        System.out.println();
+        System.out.println("  你调用 selector.select()");
+        System.out.println("      ↓");
+        System.out.println("  JVM 调用 Linux epoll_wait(epfd, events, maxevents, timeout)");
+        System.out.println("      ↓");
+        System.out.println("  内核检查所有注册 fd，没有就绪 → 线程挂起（进等待队列）");
+        System.out.println("      ↓");
+        System.out.println("  CPU 去干别的事（这就是单线程能管N个连接的关键！）");
+        System.out.println("      ↓");
+        System.out.println("  某个 fd 就绪（网卡收到数据 → 硬件中断触发）");
+        System.out.println("      ↓");
+        System.out.println("  内核唤醒线程，返回就绪 fd 列表");
+        System.out.println("      ↓");
+        System.out.println("  selector.select() 返回，值 = 就绪 fd 数量");
+        System.out.println();
+        System.out.println("  ★ 这里的「阻塞」= 线程真正休眠，CPU 利用率接近 0%");
+        System.out.println("    不是「傻等循环忙等」（那是非阻塞 IO 的轮询模式）");
+        System.out.println("    和 Thread.sleep() 本质相同，唤醒条件不同而已");
+        System.out.println();
+        System.out.println("epoll vs select/poll（为什么 epoll 支持百万并发）：");
+        System.out.println();
+        System.out.println("  select/poll（O(n)）：");
+        System.out.println("    每次调用，把所有 fd 列表从用户空间拷贝到内核");
+        System.out.println("    内核逐个遍历，问每个 fd「你就绪了吗」");
+        System.out.println("    100万连接 → 每次遍历 100万 fd → 不可接受");
+        System.out.println();
+        System.out.println("  epoll（O(1)）：");
+        System.out.println("    epoll_create → 内核建事件表（红黑树 + 就绪链表）");
+        System.out.println("    epoll_ctl(ADD) → 把 fd 加入红黑树，注册回调函数");
+        System.out.println("    fd 就绪 → 硬件中断 → 回调自动把 fd 加入就绪链表");
+        System.out.println("    epoll_wait → 只看就绪链表，不遍历所有 fd！");
+        System.out.println();
+        System.out.println("    100万连接中只有100个活跃：");
+        System.out.println("      select：每次处理 100万 fd");
+        System.out.println("      epoll：每次只处理 100 个 fd（精准！）");
+        System.out.println();
+        System.out.println("Java Selector 底层对应：");
+        System.out.println("  Selector.open()              → epoll_create1(0)");
+        System.out.println("  channel.register(sel, ops)   → epoll_ctl(ADD, fd, event)");
+        System.out.println("  selector.select()            → epoll_wait(...)");
+        System.out.println("  selector.wakeup()            → 向内部 pipe 写1字节让 epoll 返回");
+        System.out.println("                                 macOS: kqueue, Windows: IOCP");
+        System.out.println();
+        NIODemo.printSeparator();
+    }
+}
+

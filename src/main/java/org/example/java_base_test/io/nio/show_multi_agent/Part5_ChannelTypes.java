@@ -1,0 +1,86 @@
+package org.example.java_base_test.io.nio.show_multi_agent;
+
+class Part5_ChannelTypes {
+
+    static void explain() {
+        System.out.println("【第五部分：Channel 类型体系】");
+        System.out.println();
+        System.out.println("═══ 🚰 生活场景：Stream vs Channel 的本质区别 ═══");
+        System.out.println();
+        System.out.println("  传统 IO 的 Stream（流）：");
+        System.out.println("    就像家里的水龙头：");
+        System.out.println("    - 要么只能放水（OutputStream）");
+        System.out.println("    - 要么只能接水（InputStream）");
+        System.out.println("    - 不能暂停，数据像流水一样单向流动");
+        System.out.println("    - 只能顺着读，不能跳到中间某个位置");
+        System.out.println();
+        System.out.println("  NIO 的 Channel（通道）：");
+        System.out.println("    就像家里的城市供水管道（双向、有阀门、可精确控制）：");
+        System.out.println("    - 双向：同一根管道既能进水也能出水（FileChannel 可读可写）");
+        System.out.println("    - 可以跳到指定位置（position(long) 直接跳到文件第N字节）");
+        System.out.println("    - 必须配合「水桶」（Buffer）使用，不能直接拧开就用");
+        System.out.println("    - 可以非阻塞（网络Channel），可以注册到Selector统一管理");
+        System.out.println();
+        System.out.println("  Buffer（缓冲区）= 装水的桶：");
+        System.out.println("    数据不能直接从 Channel 流向你，");
+        System.out.println("    必须先装进「桶」（Buffer），你再从桶里取");
+        System.out.println("    Channel → Buffer → 你的代码   (读)");
+        System.out.println("    你的代码 → Buffer → Channel   (写)");
+        System.out.println();
+        System.out.println("  ★ 关键区别记忆：");
+        System.out.println("    Stream = 单向水龙头，直接流，不需要桶");
+        System.out.println("    Channel = 双向管道，必须配合桶（Buffer），功能更强大");
+        System.out.println();
+        System.out.println("═══ 以下是各种 Channel 类型的详细介绍 ═══");
+        System.out.println();
+        System.out.println("Channel vs Stream 根本区别：");
+        System.out.println("  ┌──────────────┬──────────────────┬─────────────────────┐");
+        System.out.println("  │              │ Stream（传统IO）  │ Channel（NIO）       │");
+        System.out.println("  ├──────────────┼──────────────────┼─────────────────────┤");
+        System.out.println("  │ 方向         │ 单向             │ 双向（可读可写）     │");
+        System.out.println("  │ 数据单位     │ 字节为单位       │ 必须配合 Buffer      │");
+        System.out.println("  │ 是否可非阻塞  │ 不支持           │ 支持（部分）         │");
+        System.out.println("  │ 是否可多路复用│ 不支持           │ 支持（Selectable）  │");
+        System.out.println("  └──────────────┴──────────────────┴─────────────────────┘");
+        System.out.println();
+        System.out.println("Channel 类型体系：");
+        System.out.println("  Channel（接口）");
+        System.out.println("    ├── FileChannel                 文件读写");
+        System.out.println("    │     ├── read(ByteBuffer)");
+        System.out.println("    │     ├── write(ByteBuffer)");
+        System.out.println("    │     ├── transferTo(pos,n,ch)  ← 零拷贝！");
+        System.out.println("    │     └── map(mode,pos,size)    ← 内存映射");
+        System.out.println("    │     ⚠️ 不支持非阻塞！不能注册 Selector");
+        System.out.println("    │");
+        System.out.println("    ├── ServerSocketChannel         监听端口（接受连接）");
+        System.out.println("    │     ├── bind(address)");
+        System.out.println("    │     ├── accept() → SocketChannel");
+        System.out.println("    │     └── register(sel, OP_ACCEPT)");
+        System.out.println("    │");
+        System.out.println("    ├── SocketChannel               TCP 连接");
+        System.out.println("    │     ├── connect(address)");
+        System.out.println("    │     ├── read(ByteBuffer)");
+        System.out.println("    │     ├── write(ByteBuffer)");
+        System.out.println("    │     └── register(sel, OP_READ | OP_WRITE)");
+        System.out.println("    │");
+        System.out.println("    └── DatagramChannel             UDP");
+        System.out.println();
+        System.out.println("★ FileChannel 为什么不能非阻塞？");
+        System.out.println("  Linux 内核设计：普通文件 fd 对 epoll「永远是就绪的」");
+        System.out.println("  因为磁盘数据最终都能读到，epoll 不支持监控普通文件 fd");
+        System.out.println("  所以 FileChannel 不能 configureBlocking(false)");
+        System.out.println("         不能 register(selector, ...)");
+        System.out.println("  想要异步文件 IO → AsynchronousFileChannel（AIO）");
+        System.out.println("                  或把 FileChannel 操作扔到独立线程池");
+        System.out.println();
+        System.out.println("FileChannel 创建方式：");
+        System.out.println("  // 推荐：NIO Files");
+        System.out.println("  FileChannel fc = FileChannel.open(path, StandardOpenOption.READ);");
+        System.out.println("  // 传统 IO 流获取");
+        System.out.println("  FileChannel fc = new FileInputStream(file).getChannel();");
+        System.out.println("  // 注意：关闭 Channel 不会自动关闭 Stream，反之亦然");
+        System.out.println();
+        NIODemo.printSeparator();
+    }
+}
+
