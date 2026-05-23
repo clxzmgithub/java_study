@@ -1,4 +1,4 @@
-package org.example.basetest;
+package org.example.basetest.io.nio;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -268,124 +268,347 @@ class Part3_BufferedInputStreamSpeedup {
 
 // ====================================================================
 // 第四部分：Buffer 三指针状态机（flip / clear / compact）
+//
+// ── 这部分讲什么？干什么用？ ──────────────────────────────────────────
+//
+// NIO 与传统 BIO 最核心的区别之一就是：
+//   BIO：直接操作 InputStream/OutputStream，数据像"水流"一样流动
+//   NIO：所有数据的读写都必须经过 Buffer，数据先装进桶，再统一处理
+//
+// ByteBuffer 就是那个"桶"。
+// 但这个桶不是普通的桶，它内部有 3 个指针（游标）来精确控制：
+//   - 现在写到哪了？
+//   - 现在读到哪了？
+//   - 总共能装多少？
+//
+// flip() / clear() / compact() 就是用来切换这 3 个指针状态的操作。
+// 搞不懂这个，NIO 的所有代码都看不懂，这是 NIO 的绝对地基。
+//
+// ── ByteBuffer 的内存结构（源码中的字段） ─────────────────────────────
+//
+// java.nio.Buffer 源码（JDK 8）：
+//
+//   private int mark = -1;   // 标记位，调用 mark() 时记录当前 position
+//   private int position = 0; // 当前游标：下一次 get/put 从这里开始
+//   private int limit;        // 有效边界：不能读/写超过这里
+//   private int capacity;     // 总容量：创建后不变
+//
+// 四者关系必须满足：0 <= mark <= position <= limit <= capacity
+//
+// 可以这样理解——把 ByteBuffer 想象成一个停车场：
+//
+//   capacity = 停车场总车位数（10个）
+//   limit    = 今天开放的车位上限（可能只开放了前8个）
+//   position = 下一辆车停的位置（当前游标）
+//   mark     = 某个"书签"位置（可以随时回来）
+//
+// ── 两种"模式"的概念 ──────────────────────────────────────────────────
+//
+// ByteBuffer 没有显式的"读模式/写模式"标志位，
+// 但通过约定，三个指针的值不同代表不同用途：
+//
+// 【写模式】刚 allocate 或 clear() 后：
+//   position = 0（从头写）
+//   limit    = capacity（全部空间都能写）
+//   图示：
+//   [0][1][2][3][4][5][6][7][8][9]
+//    P                             L=C
+//   (position=0, limit=10, capacity=10)
+//
+// 往里写 3 个字节 put('H'), put('i'), put('!') 后：
+//   [H][i][!][3][4][5][6][7][8][9]
+//               P                 L=C
+//   (position=3, limit=10)
+//   position 自动向右移动到 3
+//
+// 【读模式】flip() 后：
+//   limit    = position（之前写到哪，读就只能读到哪）
+//   position = 0（从头读）
+//   图示：
+//   [H][i][!][3][4][5][6][7][8][9]
+//    P        L
+//   (position=0, limit=3)
+//   limit 收紧到 3，防止读到没写过的垃圾数据
+//
+// ────────────────────────────────────────────────────────────────────
 // ====================================================================
 class Part4_BufferStateMachine {
 
     static void demonstrate() {
-        System.out.println("【第四部分：Buffer 三指针状态机】");
+        System.out.println("【第四部分：Buffer 三指针状态机（flip / clear / compact）】");
         System.out.println();
-        System.out.println("ByteBuffer 四个关键字段：");
-        System.out.println("  capacity  = 总容量，创建后不变");
-        System.out.println("  limit     = 有效上界（写模式=capacity，读模式=已写入量）");
-        System.out.println("  position  = 当前读/写游标");
-        System.out.println("  mark      = 标记位（reset() 跳回这里）");
+        System.out.println("━━━ ByteBuffer 的内存结构 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println("  ByteBuffer 底层就是一个 byte[]，");
+        System.out.println("  配合 4 个指针精确控制读写位置：");
+        System.out.println();
+        System.out.println("  capacity  = 总容量，创建后永远不变");
+        System.out.println("  limit     = 有效边界（写模式=capacity；读模式=已写入量）");
+        System.out.println("  position  = 当前游标（下一次 get/put 的位置）");
+        System.out.println("  mark      = 书签（调用 mark() 记录，reset() 跳回）");
+        System.out.println();
+        System.out.println("  约束：0 <= mark <= position <= limit <= capacity");
         System.out.println();
 
-        // ─── 演示 1：写 → flip → 读 → clear ───
-        System.out.println("演示 1：写 → flip → 读 → clear");
-        System.out.println("─────────────────────────────────");
+        // ════════════════════════════════════════════════════════════════
+        // 演示 1：完整生命周期：allocate → put → flip → get → clear
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 演示1：完整生命周期 allocate→put→flip→get→clear ━━━━━━━━━━━");
+        System.out.println();
+
+        // Step1: allocate
         ByteBuffer buf = ByteBuffer.allocate(10);
-        printState("刚分配 allocate(10)", buf);
+        System.out.println("  Step1: ByteBuffer.allocate(10)");
+        System.out.println("  底层创建了 byte[10]，指针初始化：");
+        printBufferDiagram("allocate后【写模式】", buf, "← P（下一次put从这里写）");
+        // 图示：capacity=10, limit=10, position=0
+        // [_][_][_][_][_][_][_][_][_][_]
+        //  P                             L=C
 
-        buf.put((byte)'H');
-        buf.put((byte)'i');
-        buf.put((byte)'!');
-        printState("put 3字节('H','i','!')后", buf);
+        // Step2: put
+        buf.put((byte) 'H');
+        buf.put((byte) 'i');
+        buf.put((byte) '!');
+        System.out.println("  Step2: put('H'), put('i'), put('!') 各一次");
+        System.out.println("  每次 put 都把 position+1，游标右移：");
+        printBufferDiagram("put 3字节后【写模式】", buf, "← P（下一次put从这里写）");
+        // [H][i][!][_][_][_][_][_][_][_]
+        //           P                    L=C
 
-        System.out.println("  → flip()：limit = position(3)，position = 0（切换为读模式）");
+        // Step3: flip
+        System.out.println("  Step3: buf.flip()");
+        System.out.println("  flip() 源码等价于：");
+        System.out.println("    limit = position;  // 把 limit 收紧到已写位置");
+        System.out.println("    position = 0;      // 游标归零，从头读");
+        System.out.println("    mark = -1;         // 清除书签");
+        System.out.println("  作用：切换为【读模式】，limit 就是防止读到未写区域的护栏");
         buf.flip();
-        printState("flip() 后", buf);
+        printBufferDiagram("flip()后【读模式】", buf, "← P（下一次get从这里读）");
+        // [H][i][!][_][_][_][_][_][_][_]
+        //  P        L
 
-        byte b1 = buf.get();
-        byte b2 = buf.get();
-        System.out.println("  → get() 两次，读到：'" + (char)b1 + "','" + (char)b2 + "'");
-        printState("get() 两次后（'!' 还没读）", buf);
+        // Step4: get
+        byte b1 = buf.get(); // 读 'H'
+        byte b2 = buf.get(); // 读 'i'
+        System.out.println("  Step4: get() 两次，读到：'" + (char)b1 + "' 和 '" + (char)b2 + "'");
+        System.out.println("  每次 get 把 position+1，游标右移：");
+        printBufferDiagram("get两次后【读模式，'!'未读】", buf, "← P（下一次get从这里读）");
+        // [H][i][!][_][_][_][_][_][_][_]
+        //       P  L
 
-        System.out.println("  → clear()：position=0，limit=capacity（清空，但数据还在数组里！）");
-        System.out.println("    ⚠️ clear() 不是真正清空数据，只是重置指针，未读的 '!' 被丢弃");
+        // Step5: clear
+        System.out.println("  Step5: buf.clear()");
+        System.out.println("  clear() 源码等价于：");
+        System.out.println("    position = 0;       // 游标归零");
+        System.out.println("    limit = capacity;   // limit 恢复到最大");
+        System.out.println("    mark = -1;          // 清除书签");
+        System.out.println("  ⚠ 重要：clear() 并不清空 byte[] 里的数据！");
+        System.out.println("    '!' 还安静地躺在 index=2 里，只是下次 put 会覆盖它");
+        System.out.println("    所以叫 clear 有点误导，准确说是「重置指针，假装清空」");
         buf.clear();
-        printState("clear() 后", buf);
+        printBufferDiagram("clear()后【写模式，数据未清】", buf, "← P（重新从头写）");
+        // [H][i][!][_][_][_][_][_][_][_]  ← 数据还在！只是指针归零了
+        //  P                              L=C
         System.out.println();
 
-        // ─── 演示 2：compact ───
-        System.out.println("演示 2：compact() —— 保留未读数据（处理粘包必备）");
-        System.out.println("─────────────────────────────────────────────────");
-        System.out.println("  场景：Buffer 里有「消息A完整数据 + 消息B的半包」");
-        System.out.println("        处理完消息A后，消息B半包不能丢，不能用 clear()");
+        // ════════════════════════════════════════════════════════════════
+        // 演示 2：compact —— NIO 粘包处理的核心操作
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 演示2：compact() —— 粘包场景下的救命操作 ━━━━━━━━━━━━━━━━━━");
+        System.out.println();
+        System.out.println("  真实场景：TCP 是流式协议，没有消息边界");
+        System.out.println("  一次 channel.read(buf) 可能读到：");
+        System.out.println("    「消息A 完整数据(3字节)」+「消息B 的半包(2字节)」");
+        System.out.println("  处理完消息A后，消息B的半包不能丢，不能用 clear()！");
+        System.out.println("  这时就要用 compact()");
+        System.out.println();
+
         ByteBuffer buf2 = ByteBuffer.allocate(10);
-        buf2.put(new byte[]{'A', 'B', 'C', 'D', 'E'});
+        // 模拟 channel.read(buf) 一次读进来 5 字节
+        buf2.put(new byte[]{'A', 'A', 'A', 'B', 'B'}); // AAA=消息A，BB=消息B半包
         buf2.flip();
-        printState("写入5字节后 flip", buf2);
+        printBufferDiagram("channel.read后 flip【读模式】", buf2, "← P（准备读取）");
+        // [A][A][A][B][B][_][_][_][_][_]
+        //  P              L
 
-        buf2.get(); buf2.get(); buf2.get(); // 读消息A（3字节）
-        printState("读了3字节（消息A处理完，D/E是消息B半包）", buf2);
+        // 处理消息A：读3字节
+        buf2.get(); buf2.get(); buf2.get();
+        printBufferDiagram("读完消息A(3字节)，BB是消息B半包", buf2, "← P（'B','B'还没读）");
+        // [A][A][A][B][B][_][_][_][_][_]
+        //           P   L
 
-        System.out.println("  → compact()：把[position,limit)的未读数据移到头部");
-        System.out.println("    执行后：D,E 在头部，position=2，limit=capacity=10");
-        System.out.println("    可以继续往后面写新收到的数据，下次处理完整的消息B");
+        System.out.println("  此时如果用 clear()，'B','B' 就丢了！");
+        System.out.println("  应该用 compact()：");
+        System.out.println("  compact() 做的事：");
+        System.out.println("    1. 把 [position, limit) 之间的未读数据复制到数组头部");
+        System.out.println("    2. position = 未读数据量（2）");
+        System.out.println("    3. limit = capacity（开放全部空间，准备继续写入）");
         buf2.compact();
-        printState("compact() 后", buf2);
+        printBufferDiagram("compact()后【写模式，BB保留在头部】", buf2, "← P（从这里继续写新数据）");
+        // [B][B][A][B][B][_][_][_][_][_]  ← 前2位是BB，后面是旧数据残留（会被覆盖）
+        //       P                          L=C
+        System.out.println("  下次 channel.read(buf) 会把新数据追加到 position=2 之后");
+        System.out.println("  再次 flip() 后，可以读到完整的 消息B（BB + 新到的数据）");
         System.out.println();
 
-        // ─── 演示 3：三者对比 ───
-        System.out.println("演示 3：flip / clear / compact 对比");
-        System.out.println("─────────────────────────────────────");
-        System.out.println("  flip()    → 写模式 → 读模式");
-        System.out.println("              limit=position, position=0");
-        System.out.println("              使用：写完数据，准备发给 channel");
+        // ════════════════════════════════════════════════════════════════
+        // 演示 3：三个操作的对比表
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 演示3：flip / clear / compact 对比速查表 ━━━━━━━━━━━━━━━━━━");
         System.out.println();
-        System.out.println("  clear()   → 任意 → 写模式（丢弃未读数据！）");
-        System.out.println("              position=0, limit=capacity");
-        System.out.println("              使用：读完所有数据，buffer 准备复用");
-        System.out.println();
-        System.out.println("  compact() → 读模式 → 写模式（保留未读数据）");
-        System.out.println("              未读数据移到头部，position=剩余量，limit=capacity");
-        System.out.println("              使用：处理粘包，半包数据不能丢");
-        System.out.println();
-
-        // ─── 演示 4：Heap vs Direct ───
-        System.out.println("演示 4：Heap Buffer vs Direct Buffer");
-        System.out.println("─────────────────────────────────────");
-        System.out.println("  ByteBuffer.allocate(1024)       → 堆内存（JVM 管理）");
-        System.out.println("    IO 时 JVM 先把数据复制到直接内存再发起 syscall（多一次拷贝）");
-        System.out.println("    原因：GC 会移动堆对象，DMA 不能用会被移动的地址");
-        System.out.println();
-        System.out.println("  ByteBuffer.allocateDirect(1024) → 堆外内存（OS malloc）");
-        System.out.println("    内核直接 DMA 到这块内存，省一次拷贝");
-        System.out.println("    缺点：分配慢，需要等 GC 触发 Cleaner 释放（或手动 unsafe）");
-        System.out.println();
-        System.out.println("  Netty ByteBuf：直接内存 + 内存池（PooledByteBufAllocator）");
-        System.out.println("    → 避免频繁 malloc/free，减少 GC 压力，性能更好");
+        System.out.println("  ┌───────────┬──────────────────────────────┬──────────────────────────────┐");
+        System.out.println("  │  操作     │  指针变化                    │  使用场景                    │");
+        System.out.println("  ├───────────┼──────────────────────────────┼──────────────────────────────┤");
+        System.out.println("  │ flip()    │ limit=position, position=0   │ 写完数据，准备读取/发送      │");
+        System.out.println("  │           │ 写模式 → 读模式              │ channel.write(buf)之前必调   │");
+        System.out.println("  ├───────────┼──────────────────────────────┼──────────────────────────────┤");
+        System.out.println("  │ clear()   │ position=0, limit=capacity   │ 数据已全部读完，复用Buffer   │");
+        System.out.println("  │           │ 任意 → 写模式（不清数据）    │ ⚠ 未读数据会丢失！          │");
+        System.out.println("  ├───────────┼──────────────────────────────┼──────────────────────────────┤");
+        System.out.println("  │ compact() │ 未读数据移到头部             │ 处理粘包/半包，保留未读数据  │");
+        System.out.println("  │           │ position=剩余量,limit=cap    │ 读模式 → 写模式（保留数据）  │");
+        System.out.println("  └───────────┴──────────────────────────────┴──────────────────────────────┘");
         System.out.println();
 
-        // ─── 演示 5：最常见 Bug ───
-        System.out.println("演示 5：最常见的 Bug —— 写完忘了 flip()");
-        System.out.println("────────────────────────────────────────");
+        // ════════════════════════════════════════════════════════════════
+        // 演示 4：Heap Buffer vs Direct Buffer
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 演示4：Heap Buffer vs Direct Buffer ━━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println();
+        System.out.println("  ByteBuffer.allocate(1024)       ← Heap Buffer（堆内存）");
+        System.out.println("  ByteBuffer.allocateDirect(1024) ← Direct Buffer（堆外内存）");
+        System.out.println();
+        System.out.println("  【Heap Buffer】");
+        System.out.println("  数据存在 JVM 堆里，GC 会管理、移动它的内存地址。");
+        System.out.println("  做 IO 时（如 channel.write(buf)），JVM 需要：");
+        System.out.println("    ① 先把堆内数据拷贝一份到堆外（固定地址）");
+        System.out.println("    ② 再让内核从堆外地址做 DMA");
+        System.out.println("  多了一次内存拷贝的原因：GC 随时可能移动堆对象，");
+        System.out.println("  DMA 是异步操作，它不认识会移动的地址");
+        System.out.println();
+        System.out.println("  【Direct Buffer】");
+        System.out.println("  数据存在堆外（直接调用 OS 的 malloc），地址固定不动。");
+        System.out.println("  内核 DMA 可以直接操作这块内存，省去堆→堆外的拷贝。");
+        System.out.println("  代价：分配/释放慢（走 OS），释放依赖 GC 触发 Cleaner，");
+        System.out.println("        不适合频繁创建小 Buffer");
+        System.out.println();
+        System.out.println("  【内存路径对比】");
+        System.out.println("  Heap Buffer IO：  磁盘/网卡 → 内核缓冲区 → 堆外临时区 → JVM堆  (3次拷贝)");
+        System.out.println("  Direct Buffer IO：磁盘/网卡 → 内核缓冲区 → 堆外Direct区         (2次拷贝)");
+        System.out.println();
+        System.out.println("  【Netty 的解法：内存池 PooledByteBufAllocator】");
+        System.out.println("  Direct Buffer 创建慢的问题，Netty 用内存池解决：");
+        System.out.println("  预先 allocateDirect 一大块，然后切分复用，避免频繁 malloc/free");
+        System.out.println();
+
+        // ════════════════════════════════════════════════════════════════
+        // 演示 5：最经典的 Bug：写完忘了 flip()
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 演示5：最经典 Bug —— 写完忘了 flip() ━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println();
         ByteBuffer bugBuf = ByteBuffer.allocate(10);
         bugBuf.put("hello".getBytes());
-        // 模拟忘了 flip
-        System.out.println("  写入 'hello'，忘了 flip()，直接 get()：");
+        // ↑ 正常应该调用 flip()，这里故意不调用，模拟 Bug
+
+        System.out.println("  写入 'hello'（5字节），忘了调用 flip()，直接发送给 channel：");
         System.out.println("    position=" + bugBuf.position()
                 + ", limit=" + bugBuf.limit()
                 + ", remaining=" + bugBuf.remaining());
-        System.out.println("    remaining=5 表示还能写5个，但此时你误以为可以读5个！");
-        System.out.println("    get() 读到的全是 0（position 到 limit 之间是空的）");
         System.out.println();
-        System.out.println("  正确写法：");
-        System.out.println("    bugBuf.flip();                        // ← 别忘了！");
-        System.out.println("    byte[] data = new byte[bugBuf.remaining()];");
-        System.out.println("    bugBuf.get(data);");
-        System.out.println("    System.out.println(new String(data)); // 输出 hello");
+        System.out.println("  问题：channel.write(bugBuf) 或 bugBuf.get() 从 position=5 开始读");
+        System.out.println("        但 limit=10，remaining=5，看起来像还有5字节可读");
+        System.out.println("        实际读到的是 index[5]~[9]，全是初始值 0x00！");
+        System.out.println("        对端收到的是 5 个 \\0 字节，'hello' 一个字没发出去！");
         System.out.println();
+        System.out.println("  ✅ 正确写法：");
+        System.out.println("    ByteBuffer buf = ByteBuffer.allocate(10);");
+        System.out.println("    buf.put(\"hello\".getBytes());");
+        System.out.println("    buf.flip();                          // ← 关键！切换为读模式");
+        System.out.println("    channel.write(buf);                  // 现在才会读 [0,5) 的数据");
+        System.out.println();
+
+        // 演示正确写法
+        ByteBuffer correctBuf = ByteBuffer.allocate(10);
+        correctBuf.put("hello".getBytes());
+        correctBuf.flip(); // 正确！
+        byte[] readData = new byte[correctBuf.remaining()];
+        correctBuf.get(readData);
+        System.out.println("  验证正确写法，flip后 get 到的内容：\"" + new String(readData) + "\"");
+        System.out.println();
+
+        // ════════════════════════════════════════════════════════════════
+        // 演示 6：mark() & reset() 书签功能
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 演示6：mark() & reset() 书签功能 ━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println();
+        System.out.println("  场景：先读几个字节判断消息类型，再重新从头解析完整消息");
+        ByteBuffer markBuf = ByteBuffer.allocate(10);
+        markBuf.put(new byte[]{'M', 'S', 'G', ':', 'H', 'i'});
+        markBuf.flip();
+
+        System.out.println("  数据：[M][S][G][:][H][i]，flip后准备读取");
+        printBufferDiagram("flip后", markBuf, "← P");
+
+        // 读3字节判断消息头
+        byte t1 = markBuf.get();
+        byte t2 = markBuf.get();
+        byte t3 = markBuf.get();
+        System.out.println("  读前3字节判断类型：'" + (char)t1 + (char)t2 + (char)t3 + "'");
+
+        // 在读完头部之后，mark 当前位置（第4字节 ':'）
+        markBuf.mark();
+        System.out.println("  mark() 在 position=" + markBuf.position() + " 打上书签");
+
+        // 继续读
+        markBuf.get(); // ':'
+        markBuf.get(); // 'H'
+        System.out.println("  继续读了2字节，现在 position=" + markBuf.position());
+
+        // 发现需要重新从':' 开始解析，reset回去
+        markBuf.reset();
+        System.out.println("  reset() 跳回书签位置，position=" + markBuf.position());
+        byte back = markBuf.get();
+        System.out.println("  再次 get() 读到：'" + (char)back + "'（正是 ':' ）");
+        System.out.println();
+
         NIODemo.printSeparator();
     }
 
-    static void printState(String label, ByteBuffer buf) {
+    // 打印 Buffer 的可视化状态图
+    static void printBufferDiagram(String label, ByteBuffer buf, String ignored) {
+        int cap  = buf.capacity();
+        int lim  = buf.limit();
+        int pos  = buf.position();
+
         System.out.println("  [" + label + "]");
-        System.out.println("    capacity=" + buf.capacity()
-                + "  limit=" + buf.limit()
-                + "  position=" + buf.position()
-                + "  remaining=" + buf.remaining());
+
+        // 第一行：数组内容（直接访问 array()，不受 limit 限制）
+        byte[] array = buf.array();
+        StringBuilder cells = new StringBuilder("    |");
+        for (int i = 0; i < cap; i++) {
+            byte b = array[i];
+            String cell = b == 0 ? " _ " : " " + (char) b + " ";
+            cells.append(cell).append("|");
+        }
+        System.out.println(cells);
+
+        // 第二行：指针标记
+        StringBuilder pointers = new StringBuilder("     ");
+        for (int i = 0; i < cap; i++) {
+            String marker = "   ";
+            if (i == pos && i == lim) marker = "P=L";
+            else if (i == pos)        marker = " P ";
+            else if (i == lim)        marker = " L ";
+            else                      marker = "   ";
+            pointers.append(marker).append(" ");
+        }
+        // 如果 pos == cap，P 打在末尾
+        if (pos == cap) pointers.append(" P");
+        if (lim == cap) pointers.append("(L=C)");
+        System.out.println(pointers);
+
+        System.out.println("    capacity=" + cap + "  limit=" + lim
+                + "  position=" + pos + "  remaining=" + buf.remaining());
+        System.out.println();
     }
 }
 
