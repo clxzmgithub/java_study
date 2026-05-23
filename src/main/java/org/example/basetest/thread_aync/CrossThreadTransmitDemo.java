@@ -1,4 +1,4 @@
-package org.example.basetest;
+package org.example.basetest.thread_aync;
 
 import java.util.HashMap;
 import java.util.Map;
