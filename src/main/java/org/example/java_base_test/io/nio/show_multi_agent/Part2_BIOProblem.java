@@ -52,10 +52,10 @@ class Part2_BIOProblem {
         System.out.println("  每个线程默认栈：512KB ~ 1MB");
         System.out.println("  1000个线程内存：500MB ~ 1GB（光内存就撑不住）");
         System.out.println();
-        System.out.println("  更大的问题（CPU 利用率）：");
-        System.out.println("    每个线程 99% 时间在 in.read() 处阻塞");
-        System.out.println("    CPU 真正干活时间 < 1%");
-        System.out.println("    1000个线程上下文切换开销 比 干活 还大");
+        System.out.println("  更大的问题（线程资源浪费 + 上下文切换）：");
+        System.out.println("    每个线程 99% 时间在 in.read() 处阻塞，线程资源被白白占用");
+        System.out.println("    真正处理业务的时间 < 1%");
+        System.out.println("    1000个线程频繁上下文切换的开销 比 实际处理业务 还大");
         System.out.println();
         System.out.println("  实际案例：早期 Tomcat（BIO 模式）");
         System.out.println("    默认 maxThreads = 200");
