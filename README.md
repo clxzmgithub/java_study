@@ -34,11 +34,12 @@
 java_study/
 │
 ├── java_base_test/                  Java 基础核心
-│   ├── *.java                         ├─ Java 语言基础（泛型/集合/反射/内部类/基本类型等）
+│   ├── *.java                         ├─ Java 语言基础（见下方知识点清单）
 │   ├── io/                            ├─ IO / NIO 体系（核心重点）
-│   │   ├── bio/                       │    ├─ BIO 阻塞模型
+│   │   ├── bio/                       │    ├─ BIO 阻塞模型（4个演示文件）
 │   │   ├── nio/                       │    ├─ NIO 全体系（Part1~Part23，七层递进）
-│   │   └── zerocopy/                  │    └─ 零拷贝专题
+│   │   │   └── show_multi_agent/      │    │    └─ 多Agent重构版（每个Part独立文件）
+│   │   └── zerocopy/                  │    └─ 零拷贝专题对比演示
 │   ├── thread_aync/                   ├─ 多线程 & 异步编程
 │   ├── proxy_aop/                     ├─ 代理模式 & AOP
 │   └── multi_agent/                   └─ 多 Agent 系统架构（演示用）
@@ -66,27 +67,76 @@ java_study/
 
 ## 📊 学习进度
 
-> 各模块学习状态持续更新。
+> 各模块学习状态持续更新。状态说明：🔜 待开始 ｜ 🔥 进行中 ｜ ✅ 已完成 ｜ ⏸️ 暂停
 
-| 模块 | 状态 | 开始时间 | 备注 |
-|------|:----:|---------|------|
-| Java 语言基础 | 🔥 进行中 | 2025-05 | 泛型/反射/集合/内部类等 |
-| IO / NIO 体系 | 🔥 进行中 | 2025-05 | Part1~Part23，七层递进 |
-| 多线程 & 异步 | 🔥 进行中 | 2025-05 | 线程池/ThreadLocal/CompletableFuture |
-| 代理模式 & AOP | 🔥 进行中 | 2025-05 | JDK动态代理/CGLIB/Spring AOP |
-| 数据结构 | 🔜 待开始 | - | |
-| 算法 | 🔜 待开始 | - | |
-| 设计模式 | 🔜 待开始 | - | |
-| 操作系统 | 🔜 待开始 | - | 穿插学习 |
-| 计算机网络 | 🔜 待开始 | - | 穿插学习 |
-| 计算机原理 | 🔜 待开始 | - | 穿插学习 |
-| 编译原理 | 🔜 待开始 | - | 了解为主，打好概念基础 |
-| **JDK 核心源码** | 🔜 待开始 | - | 集合/并发/IO/JVM 相关 |
-| **Kafka 源码** | 🔜 待开始 | - | 存储/网络/副本机制 |
-| **RocketMQ 源码** | 🔜 待开始 | - | 消息存储/事务/延迟消息 |
-| **RPC 框架源码** | 🔜 待开始 | - | Dubbo/gRPC 核心链路 |
+### 第一阶段：Java 语言地基
 
-> 状态说明：🔜 待开始 ｜ 🔥 进行中 ｜ ✅ 已完成 ｜ ⏸️ 暂停
+| 模块 | 子方向 | 状态 | 备注 |
+|------|--------|:----:|------|
+| **Java 语言基础** | 泛型、内部类、equals/hashCode | 🔥 进行中 | |
+| | 基本类型/包装类、浮点精度 | 🔥 进行中 | |
+| | 反射、Class 对象 | 🔥 进行中 | |
+| | Null 最佳实践、资源管理 | 🔥 进行中 | |
+| **多线程 & 异步** | 线程池（ThreadPoolExecutor 七参数） | 🔥 进行中 | |
+| | ThreadLocal 内存泄漏 | 🔥 进行中 | |
+| | CompletableFuture 异步编排 | 🔥 进行中 | |
+| | 跨线程 ThreadLocal 传递（TTL） | 🔥 进行中 | |
+| **代理模式 & AOP** | 静态代理 → JDK动态代理 → CGLIB | 🔥 进行中 | |
+| | Spring AOP 五种通知类型 | 🔥 进行中 | |
+| | AOP 生产场景（链路追踪/限流/幂等） | 🔥 进行中 | |
+
+### 第二阶段：IO 体系
+
+| 模块 | 子方向 | 状态 | 备注 |
+|------|--------|:----:|------|
+| **BIO** | 单线程阻塞 / 每连接一线程 演示 | 🔥 进行中 | |
+| **NIO（第一~二层）** | 五种IO模型 / BIO问题 / Buffer三指针 / Channel体系 | 🔥 进行中 | Part1~Part5 |
+| **NIO（第三层）** | Selector+epoll / SelectionKey / 零拷贝 / 选型指南 | 🔥 进行中 | Part6~Part13 |
+| **NIO（第四层）** | FileChannel / MappedByteBuffer / NIO.2 | 🔥 进行中 | Part14~Part16 |
+| **NIO（第五层）** | Netty架构 / 粘包拆包 / 实战 | 🔥 进行中 | Part17~Part19 |
+| **NIO（第六层）** | Kafka IO体系 / 四大框架横向对比 | 🔥 进行中 | Part20~Part21 |
+| **NIO（第七层）** | NIO.2进阶 / 虚拟线程(JDK21) | 🔥 进行中 | Part22~Part23 |
+| **零拷贝专题** | 传统拷贝 vs transferTo vs mmap 性能对比 | 🔥 进行中 | |
+
+### 第三阶段：算法与设计
+
+| 模块 | 子方向 | 状态 | 备注 |
+|------|--------|:----:|------|
+| **数据结构** | 数组/链表/栈/队列/树/堆/哈希表/图 | 🔜 待开始 | |
+| **算法** | 排序/二分/动态规划/回溯/图算法 | 🔜 待开始 | |
+| **设计模式** | 创建型（单例/工厂/建造者） | 🔜 待开始 | |
+| | 结构型（装饰器/代理/适配器） | 🔜 待开始 | |
+| | 行为型（策略/责任链/观察者） | 🔜 待开始 | |
+
+### 第四阶段：计算机基础理论（穿插学习）
+
+| 模块 | 子方向 | 状态 | 备注 |
+|------|--------|:----:|------|
+| **操作系统** | 进程/线程/上下文切换 | 🔜 待开始 | 穿插学习 |
+| | 内存管理/Page Cache/mmap | 🔜 待开始 | 穿插学习 |
+| | IO多路复用（select/poll/epoll） | 🔜 待开始 | 穿插学习 |
+| **计算机网络** | TCP（握手/挥手/流量控制/拥塞控制） | 🔜 待开始 | 穿插学习 |
+| | HTTP/1.1 vs HTTP/2 vs HTTP/3 | 🔜 待开始 | 穿插学习 |
+| **计算机原理** | CPU缓存行/伪共享/内存屏障 | 🔜 待开始 | 穿插学习 |
+| | DMA与零拷贝硬件基础 | 🔜 待开始 | 穿插学习 |
+| **编译原理** | 词法/语法/语义分析、AST | 🔜 待开始 | 了解为主 |
+| | JIT/javac/APT/invokedynamic | 🔜 待开始 | 了解为主 |
+
+### 第五阶段：优秀源码研读（进阶）
+
+| 模块 | 子方向 | 状态 | 备注 |
+|------|--------|:----:|------|
+| **JDK 核心源码** | 集合框架（HashMap/ConcurrentHashMap/ArrayList） | 🔜 待开始 | |
+| | 并发工具（AQS/ReentrantLock/ThreadPoolExecutor） | 🔜 待开始 | |
+| | IO体系（BufferedInputStream/FileChannel/Selector） | 🔜 待开始 | |
+| | JVM相关（String/Integer缓存/Reference引用链） | 🔜 待开始 | |
+| **Kafka 源码** | 存储层（Log/LogSegment/OffsetIndex） | 🔜 待开始 | |
+| | 网络层（Selector/KafkaChannel/Processor） | 🔜 待开始 | |
+| | 副本机制 / 消费者协调 | 🔜 待开始 | |
+| **RocketMQ 源码** | CommitLog（mmap写）/ ConsumeQueue / IndexFile | 🔜 待开始 | |
+| | 事务消息 / 延迟消息（时间轮） | 🔜 待开始 | |
+| **RPC 框架源码** | Dubbo（SPI/服务导出/网络层） | 🔜 待开始 | |
+| | gRPC（HTTP/2多路复用/Protobuf） | 🔜 待开始 | |
 
 ---
 
@@ -102,6 +152,25 @@ Java 语言基础（泛型/equals/基本类型/内部类/反射）
     ↓
 代理模式 & AOP（静态代理 → JDK动态代理 → CGLIB → Spring AOP）
 ```
+
+#### Java 语言基础知识点清单（`java_base_test/` 根目录）
+
+| 知识点 | 对应文件 | 说明 |
+|--------|---------|------|
+| 泛型基础 | `FanxingDemo.java` / `GenericList.java` / `GenericMethod.java` | 泛型类、泛型方法、类型擦除 |
+| 内部类 | `InnerClassDemo.java` | 成员内部类/静态内部类/匿名内部类 |
+| equals & hashCode | `EqualsAndHashCodeDemo.java` | 必须同时重写，HashMap 正确工作的前提 |
+| 基本类型 vs 包装类 | `PrimitiveVsWrapper.java` | 自动装箱拆箱、Integer 缓存范围 |
+| 浮点精度 | `FloatingPointPrecision.java` | 浮点数精度陷阱与 BigDecimal 正确用法 |
+| Comparable vs Comparator | `ComparableVsComparatorDemo.java` | 自然排序 vs 定制排序 |
+| try-with-resources | `TryWithResourcesDemo.java` | AutoCloseable 资源自动关闭 |
+| Null 最佳实践 | `NullBestPracticeExamples.java` / `DatabaseNullAnalysis.java` | NPE 防御、Optional 使用场景 |
+| 泛型容器 | `Container.java` / `NumberBox.java` / `Box.java` | 泛型边界 extends/super |
+| 反射与类对象 | `GetClassMethodDemo.java` / `RuntimeClassObjectExplained.java` | Class 对象、反射获取方法/字段 |
+| 静态 vs 非静态 | `StaticVsNonStatic.java` | 静态成员与实例成员的内存模型区别 |
+| 泛型 DAO 模式 | `BaseDao.java` / `AbstractBaseDao.java` / `UserDao.java` | 泛型在实际 DAO 中的应用 |
+| 资源管理模式 | `ResourceManagementDemo.java` | 资源获取即初始化（RAII）在 Java 中的实现 |
+| Hash 冲突 | `HashCollisionExplained.java` | 哈希冲突产生原因与解决方案 |
 
 **学习重点：**
 - `泛型`：类型擦除是高频面试题，理解后再看集合框架源码事半功倍
@@ -133,10 +202,31 @@ Netty 框架：核心架构 / 粘包拆包 / Echo·HTTP Server 实战
 前沿新特性：NIO.2 进阶 / JDK9~21 / 虚拟线程（Project Loom）
 ```
 
-**入口文件：** `java_base_test/io/nio/NIODemo.java`（Part1 → Part23 依次运行）
+#### IO 目录结构说明（`java_base_test/io/`）
+
+| 目录/文件 | 内容 | 建议学习时机 |
+|----------|------|------------|
+| `bio/BIOServer_NoThread.java` | 单线程阻塞服务端，演示一个连接卡死后续所有请求 | 最先学 |
+| `bio/BIOServer_WithThread.java` | 每连接一线程，解决阻塞但引入线程爆炸风险 | 最先学 |
+| `bio/BIOClient.java` | 配套客户端，支持键盘交互 | 最先学 |
+| `nio/NIODemo.java` | NIO 全体系单文件完整版（Part1~Part23），适合全局阅读 | BIO 之后 |
+| `nio/show_multi_agent/NIODemoMain.java` | 多Agent重构版，每个Part独立文件，按知识点单独查阅 | BIO 之后 |
+| `zerocopy/ZeroCopyDemo.java` | 传统拷贝 vs transferTo vs mmap 三种方式性能对比 | Part9~Part15 之后 |
+
+**NIO 七层递进路线：**
+
+| 层级 | Part | 核心内容 |
+|------|------|---------|
+| 第一层 | Part1 ~ Part3 | 五种IO模型 / BIO问题 / BufferedInputStream提速 |
+| 第二层 | Part4 ~ Part5 | Buffer三指针状态机 / Channel类型体系 |
+| 第三层 | Part6 ~ Part13 | Selector+epoll / SelectionKey / 零拷贝 / 选型指南 |
+| 第四层 | Part14 ~ Part16 | FileChannel / MappedByteBuffer(mmap) / NIO.2 |
+| 第五层 | Part17 ~ Part19 | Netty架构 / 粘包拆包 / 实战 |
+| 第六层 | Part20 ~ Part21 | Kafka IO体系 / 四大框架横向对比 |
+| 第七层 | Part22 ~ Part23 | NIO.2进阶 / 虚拟线程(JDK21) |
 
 > ⚠️ **学习建议：** Part6~Part8（Selector+NIO Server）是整个体系最难的部分，反复看几遍再继续。
-> 零拷贝（Part9~Part12）和 Netty（Part17~Part19）理解起来以前面为基础，不要跳读。
+> 零拷贝（Part9~Part12）和 Netty（Part17~Part19）以前面为基础，不要跳读。
 
 ---
 
@@ -152,6 +242,25 @@ Netty 框架：核心架构 / 粘包拆包 / Echo·HTTP Server 实战
 ```
 
 **学习建议：** 设计模式不要死记名字，重点理解「它解决了什么问题」，结合已学的 IO 和 Spring AOP 场景对照理解（装饰器 = BufferedInputStream，责任链 = Netty Pipeline，策略 = Spring HandlerMapping）。
+
+---
+
+### 第四阶段：计算机基础理论（穿插学习）
+> 目标：理解程序运行的底层根因，不是单独学，而是遇到疑问时对照查
+
+| 遇到这个问题时 | 去看这个模块 |
+|--------------|------------|
+| epoll 为什么比 select 快？NIO Selector 怎么工作？ | `operate_system/`（IO多路复用） |
+| mmap 原理是什么？Page Cache 怎么加速 Kafka？ | `operate_system/`（内存管理） |
+| TCP 粘包/拆包是什么？为什么 Netty 要做 FrameDecoder？ | `compute_network/`（传输层） |
+| volatile 为什么能保证可见性？DCL 为什么要加 volatile？ | `computer_principle/`（内存屏障） |
+| DMA 是什么？零拷贝为什么说「2次DMA拷贝，0次CPU拷贝」？ | `computer_principle/`（总线&DMA） |
+| javac 怎么把源码变成字节码？JIT 是什么？词法/语法分析怎么工作？ | `compiler_principle/` |
+
+> 📌 **关于编译原理**
+> 编译原理是计算机与软件领域最核心的基础理论课之一，涵盖词法分析、语法分析、语义分析、中间代码生成、代码优化、目标代码生成等完整流程。
+> 理解编译原理能让你真正看懂 JVM 的字节码编译（javac）、JIT 即时编译、注解处理器（APT）、Lombok 等工具的工作原理，也是理解 LLM 如何「理解」代码的重要基础。
+> 本项目已建立该模块目录（`compiler_principle/`），代码内容后续视学习进度补充。
 
 ---
 
@@ -206,25 +315,6 @@ Netty 框架：核心架构 / 粘包拆包 / Echo·HTTP Server 实战
 
 ---
 
-### 第四阶段：计算机基础理论（穿插学习）
-> 目标：理解程序运行的底层根因，不是单独学，而是遇到疑问时对照查
-
-| 遇到这个问题时 | 去看这个模块 |
-|--------------|------------|
-| epoll 为什么比 select 快？NIO Selector 怎么工作？ | `operate_system/`（IO多路复用） |
-| mmap 原理是什么？Page Cache 怎么加速 Kafka？ | `operate_system/`（内存管理） |
-| TCP 粘包/拆包是什么？为什么 Netty 要做 FrameDecoder？ | `compute_network/`（传输层） |
-| volatile 为什么能保证可见性？DCL 为什么要加 volatile？ | `computer_principle/`（内存屏障） |
-| DMA 是什么？零拷贝为什么说「2次DMA拷贝，0次CPU拷贝」？ | `computer_principle/`（总线&DMA） |
-| javac 怎么把源码变成字节码？JIT 是什么？词法/语法分析怎么工作？ | `compiler_principle/` |
-
-> 📌 **关于编译原理**
-> 编译原理是计算机与软件领域最核心的基础理论课之一，涵盖词法分析、语法分析、语义分析、中间代码生成、代码优化、目标代码生成等完整流程。
-> 理解编译原理能让你真正看懂 JVM 的字节码编译（javac）、JIT 即时编译、注解处理器（APT）、Lombok 等工具的工作原理，也是理解 LLM 如何「理解」代码的重要基础。
-> 本项目已建立该模块目录（`compiler_principle/`），代码内容后续视学习进度补充。
-
----
-
 ## 🚀 运行方式
 
 ```bash
@@ -250,6 +340,7 @@ java -cp target/classes org.example.java_base_test.multi_agent.MultiAgentDemo
 | 2025-05 | 重构 NIODemo 为多 Agent 模式（`io/nio/show_multi_agent/`），23个Part拆分为独立文件 |
 | 2025-05 | 建立各模块 README，新增编译原理模块（`compiler_principle/`） |
 | 2025-05 | 新增优秀源码研读方向（`source_code_study/`），规划 JDK / Kafka / RocketMQ / RPC 四条源码学习路线 |
+| 2026-05 | 完善 README 地图：补充 Java 语言基础知识点清单、修正阶段编号、细化 IO 目录说明 |
 
 ---
 
