@@ -50,8 +50,14 @@ java_study/
 ├── operate_system/                  计算机基础理论
 ├── compute_network/                   ├─ 操作系统
 ├── computer_principle/                ├─ 计算机网络
-└── compiler_principle/                ├─ 计算机原理
-                                       └─ 编译原理
+├── compiler_principle/                ├─ 计算机原理
+│                                      └─ 编译原理
+│
+└── source_code_study/               优秀源码研读
+    ├── jdk/                             ├─ JDK 核心源码（集合/并发/IO/JVM）
+    ├── kafka/                           ├─ Kafka 源码（存储/网络/副本/消费者）
+    ├── rocketmq/                        ├─ RocketMQ 源码（消息存储/事务/延迟）
+    └── rpc/                             └─ RPC 框架源码（Dubbo/gRPC 核心链路）
 ```
 
 各模块详细说明见对应目录下的 README.md。
@@ -75,6 +81,10 @@ java_study/
 | 计算机网络 | 🔜 待开始 | - | 穿插学习 |
 | 计算机原理 | 🔜 待开始 | - | 穿插学习 |
 | 编译原理 | 🔜 待开始 | - | 了解为主，打好概念基础 |
+| **JDK 核心源码** | 🔜 待开始 | - | 集合/并发/IO/JVM 相关 |
+| **Kafka 源码** | 🔜 待开始 | - | 存储/网络/副本机制 |
+| **RocketMQ 源码** | 🔜 待开始 | - | 消息存储/事务/延迟消息 |
+| **RPC 框架源码** | 🔜 待开始 | - | Dubbo/gRPC 核心链路 |
 
 > 状态说明：🔜 待开始 ｜ 🔥 进行中 ｜ ✅ 已完成 ｜ ⏸️ 暂停
 
@@ -145,6 +155,57 @@ Netty 框架：核心架构 / 粘包拆包 / Echo·HTTP Server 实战
 
 ---
 
+### 第五阶段：优秀源码研读（进阶）
+> 目标：从「会用」到「看懂顶级工程师怎么写」，建立工业级代码审美与架构直觉
+
+#### 🔑 JDK 核心源码
+| 方向 | 重点类/包 | 核心收益 |
+|------|----------|--------|
+| 集合框架 | `HashMap` / `ConcurrentHashMap` / `ArrayList` / `LinkedList` | 理解扩容/红黑树/CAS分段锁 |
+| 并发工具 | `AQS`（`ReentrantLock`/`Semaphore`/`CountDownLatch`）/ `ThreadPoolExecutor` | 理解队列+状态机设计 |
+| IO 体系 | `InputStream` 装饰器链 / `FileChannel` / `Selector` 实现 | 印证 NIO 体系学习成果 |
+| JVM 相关 | `String` 不可变性 / `Integer` 缓存 / `Reference` 引用链 | 理解 JVM 优化手段 |
+
+**入口建议：** 先读 `HashMap` → `ConcurrentHashMap` → `AQS`，这条线把集合+并发的核心设计串起来。
+
+#### 📨 Kafka 源码
+| 方向 | 关键模块 | 核心收益 |
+|------|---------|--------|
+| 存储层 | `Log` / `LogSegment` / `OffsetIndex` | 理解顺序写+稀疏索引设计 |
+| 网络层 | `Selector`（基于 NIO）/ `KafkaChannel` / `Processor` | 印证 NIO Selector 学习成果 |
+| 副本机制 | `ReplicaManager` / ISR 收缩与扩展 | 理解高可用设计 |
+| 消费者 | `ConsumerCoordinator` / `OffsetManager` | 理解分区再平衡 |
+
+**入口建议：** 先看存储层（Log + LogSegment），与 NIODemo Part20 对照阅读收益最大。
+
+#### 📦 RocketMQ 源码
+| 方向 | 关键模块 | 核心收益 |
+|------|---------|--------|
+| 消息存储 | `CommitLog`（mmap写）/ `ConsumeQueue` / `IndexFile` | 理解 mmap 在真实系统中的应用 |
+| 事务消息 | `TransactionalMessageBridge` / 二阶段提交 | 理解分布式事务实现 |
+| 延迟消息 | `ScheduleMessageService` / 时间轮 | 理解定时任务高效实现 |
+| 网络通信 | `Netty` 作为通信层 / `RemotingCommand` 协议 | 印证 Netty 学习成果 |
+
+**入口建议：** 先看 `CommitLog`，与 NIODemo MappedByteBuffer 章节对照，体会 mmap 在 TB 级存储的实战应用。
+
+#### 🔌 RPC 框架源码（Dubbo / gRPC）
+| 方向 | 关键模块 | 核心收益 |
+|------|---------|--------|
+| Dubbo 服务导出 | `ServiceConfig` / `Invoker` / `Protocol` SPI | 理解微内核+SPI扩展机制 |
+| Dubbo 网络层 | `NettyServer` / `NettyChannel` / `DubboCodec` | 印证 Netty 协议编解码 |
+| gRPC 核心 | `Channel` / `ManagedChannel` / `Stub` / Protobuf 序列化 | 理解 HTTP/2 多路复用+流式通信 |
+| 负载均衡 | Dubbo `LoadBalance` SPI / gRPC `NameResolver` | 理解客户端负载均衡实现 |
+
+**入口建议：** Dubbo 先看服务导出流程（`ServiceConfig.export()`），gRPC 先看 `ManagedChannelBuilder` 到实际 RPC 调用的完整链路。
+
+> 💡 **源码阅读方法论**
+> 1. **带问题读**：先从使用层面提出一个问题（如「HashMap 扩容为什么是 2 倍？」），再去源码里找答案
+> 2. **对照 DEBUG**：写一个 Demo，断点进入源码，比直接看源码效率高 3 倍
+> 3. **先主干后细节**：第一遍只看核心流程，忽略异常处理和边界条件
+> 4. **画时序图**：复杂模块边读边画，画完就记住了
+
+---
+
 ### 第四阶段：计算机基础理论（穿插学习）
 > 目标：理解程序运行的底层根因，不是单独学，而是遇到疑问时对照查
 
@@ -188,6 +249,7 @@ java -cp target/classes org.example.java_base_test.multi_agent.MultiAgentDemo
 | 2025-05 | 新增多 Agent 系统架构演示（`multi_agent/`），Orchestrator-Worker 模式 |
 | 2025-05 | 重构 NIODemo 为多 Agent 模式（`io/nio/show_multi_agent/`），23个Part拆分为独立文件 |
 | 2025-05 | 建立各模块 README，新增编译原理模块（`compiler_principle/`） |
+| 2025-05 | 新增优秀源码研读方向（`source_code_study/`），规划 JDK / Kafka / RocketMQ / RPC 四条源码学习路线 |
 
 ---
 
