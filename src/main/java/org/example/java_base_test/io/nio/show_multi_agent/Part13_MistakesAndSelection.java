@@ -35,7 +35,7 @@ class Part13_MistakesAndSelection {
         System.out.println("         本质：BIO 瓶颈是线程数，NIO 瓶颈是 CPU 处理能力");
         System.out.println();
         System.out.println("  误区2：以为 selector.select() 是忙等（CPU spin）");
-        System.out.println("    真相：是真正的线程休眠（epoll_wait），CPU 利用率接近 0%");
+        System.out.println("    真相：是真正的线程休眠（epoll_wait），该线程不占用 CPU 时间片");
         System.out.println();
         System.out.println("  误区3：OP_WRITE 一直注册");
         System.out.println("    真相：发送缓冲区几乎一直有空间，OP_WRITE 几乎一直就绪");
