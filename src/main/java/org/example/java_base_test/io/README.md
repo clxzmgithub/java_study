@@ -17,7 +17,7 @@ bio/  →  nio/NIODemo.java（Part1~Part23）  →  zerocopy/
 |------|------|
 | `BIOServer_NoThread.java` | 单线程阻塞服务端，演示一个连接如何卡死后续所有请求 |
 | `BIOServer_WithThread.java` | 每连接一线程模式，解决阻塞问题但引入线程爆炸风险 |
-| `BIOClient.java` | 配套客户端 |
+| `BIOClient.java` | 配套客户端，支持键盘交互（输入消息发送，quit 退出） |
 | `BIODemo.java` | 运行引导说明 |
 
 **运行方式：** 先启动 Server，再运行 Client，对比两个 Server 的行为差异。

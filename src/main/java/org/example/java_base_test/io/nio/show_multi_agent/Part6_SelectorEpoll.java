@@ -28,7 +28,7 @@ class Part6_SelectorEpoll {
         System.out.println("    selectedKeys()                        = 当前响了的呼叫器列表");
         System.out.println();
         System.out.println("  【重要理解：select() 的「阻塞」≠ 傻等】");
-        System.out.println("    服务员等呼叫器响 = 睡觉（CPU利用率接近0%，省电！）");
+        System.out.println("    服务员等呼叫器响 = 睡觉（该线程不占用 CPU 时间片，省电！）");
         System.out.println("    不是服务员站着等（那是非阻塞轮询，浪费体力/CPU）");
         System.out.println("    和 Thread.sleep() 一样，都是真正休眠，被动等待唤醒");
         System.out.println();
@@ -50,7 +50,7 @@ class Part6_SelectorEpoll {
         System.out.println("      ↓");
         System.out.println("  selector.select() 返回，值 = 就绪 fd 数量");
         System.out.println();
-        System.out.println("  ★ 这里的「阻塞」= 线程真正休眠，CPU 利用率接近 0%");
+        System.out.println("  ★ 这里的「阻塞」= 线程真正休眠，该线程不占用 CPU 时间片");
         System.out.println("    不是「傻等循环忙等」（那是非阻塞 IO 的轮询模式）");
         System.out.println("    和 Thread.sleep() 本质相同，唤醒条件不同而已");
         System.out.println();

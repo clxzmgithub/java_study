@@ -266,7 +266,7 @@ class Part1_FiveIOModels {
         System.out.println();
         System.out.println("  模型① BIO  → 你打电话给前台：「我要一份外卖，好了叫我」");
         System.out.println("             然后你就站在前台等，什么都不干，直到外卖到了才走");
-        System.out.println("             （线程完全阻塞，CPU 全程白白浪费）");
+        System.out.println("             （线程全程阻塞挂起，无法服务其他连接，线程资源白白占用）");
         System.out.println();
         System.out.println("  模型② NIO轮询 → 你回工位，每隔30秒起来跑一趟前台问：「外卖到了吗？」");
         System.out.println("             没到就回去，30秒后再跑一趟。如此反复。");
@@ -412,10 +412,10 @@ class Part2_BIOProblem {
         System.out.println("  每个线程默认栈：512KB ~ 1MB");
         System.out.println("  1000个线程内存：500MB ~ 1GB（光内存就撑不住）");
         System.out.println();
-        System.out.println("  更大的问题（CPU 利用率）：");
-        System.out.println("    每个线程 99% 时间在 in.read() 处阻塞");
-        System.out.println("    CPU 真正干活时间 < 1%");
-        System.out.println("    1000个线程上下文切换开销 比 干活 还大");
+        System.out.println("  更大的问题（线程资源浪费 + 上下文切换）：");
+        System.out.println("    每个线程 99% 时间在 in.read() 处阻塞，线程资源被白白占用");
+        System.out.println("    线程虽挂起不消耗 CPU，但占着内存和系统资源");
+        System.out.println("    1000个线程频繁上下文切换开销 比 干活 还大");
         System.out.println();
         System.out.println("  实际案例：早期 Tomcat（BIO 模式）");
         System.out.println("    默认 maxThreads = 200");
@@ -1020,7 +1020,7 @@ class Part6_SelectorEpoll {
         System.out.println("    selectedKeys()                        = 当前响了的呼叫器列表");
         System.out.println();
         System.out.println("  【重要理解：select() 的「阻塞」≠ 傻等】");
-        System.out.println("    服务员等呼叫器响 = 睡觉（CPU利用率接近0%，省电！）");
+        System.out.println("    服务员等呼叫器响 = 睡觉（该线程不占用 CPU 时间片，省电！）");
         System.out.println("    不是服务员站着等（那是非阻塞轮询，浪费体力/CPU）");
         System.out.println("    和 Thread.sleep() 一样，都是真正休眠，被动等待唤醒");
         System.out.println();
@@ -1042,7 +1042,7 @@ class Part6_SelectorEpoll {
         System.out.println("      ↓");
         System.out.println("  selector.select() 返回，值 = 就绪 fd 数量");
         System.out.println();
-        System.out.println("  ★ 这里的「阻塞」= 线程真正休眠，CPU 利用率接近 0%");
+        System.out.println("  ★ 这里的「阻塞」= 线程真正休眠，该线程不占用 CPU 时间片");
         System.out.println("    不是「傻等循环忙等」（那是非阻塞 IO 的轮询模式）");
         System.out.println("    和 Thread.sleep() 本质相同，唤醒条件不同而已");
         System.out.println();
@@ -1835,7 +1835,7 @@ class Part13_MistakesAndSelection {
         System.out.println("         本质：BIO 瓶颈是线程数，NIO 瓶颈是 CPU 处理能力");
         System.out.println();
         System.out.println("  误区2：以为 selector.select() 是忙等（CPU spin）");
-        System.out.println("    真相：是真正的线程休眠（epoll_wait），CPU 利用率接近 0%");
+        System.out.println("    真相：是真正的线程休眠（epoll_wait），该线程不占用 CPU 时间片");
         System.out.println();
         System.out.println("  误区3：OP_WRITE 一直注册");
         System.out.println("    真相：发送缓冲区几乎一直有空间，OP_WRITE 几乎一直就绪");

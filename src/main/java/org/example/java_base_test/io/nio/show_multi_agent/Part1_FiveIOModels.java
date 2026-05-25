@@ -17,7 +17,7 @@ class Part1_FiveIOModels {
         System.out.println();
         System.out.println("  模型① BIO  → 你打电话给前台：「我要一份外卖，好了叫我」");
         System.out.println("             然后你就站在前台等，什么都不干，直到外卖到了才走");
-        System.out.println("             （线程完全阻塞，CPU 全程白白浪费）");
+        System.out.println("             （线程全程阻塞挂起，无法服务其他连接，线程资源白白占用）");
         System.out.println();
         System.out.println("  模型② NIO轮询 → 你回工位，每隔30秒起来跑一趟前台问：「外卖到了吗？」");
         System.out.println("             没到就回去，30秒后再跑一趟。如此反复。");

@@ -31,6 +31,11 @@ Java 语言核心机制的深度演示，每个知识点配有完整代码示例
 | `StaticVsNonStatic.java` | 静态成员 vs 实例成员，内存模型角度分析 |
 | `RuntimeClassObjectExplained.java` / `GetClassMethodDemo.java` | Class 对象，运行时类型，反射基础 |
 | `NullBestPracticeExamples.java` / `DatabaseNullAnalysis.java` | Null 最佳实践，MySQL NULL 的三值逻辑陷阱 |
+| `Container.java` / `NumberBox.java` / `Box.java` | 泛型边界 extends/super，泛型容器设计 |
+| `BaseDao.java` / `AbstractBaseDao.java` / `UserDao.java` | 泛型在 DAO 层的应用，抽象模板模式 |
+| `StaticVsNonStatic.java` | 静态成员 vs 实例成员，内存模型角度分析 |
+| `ResourceManagementDemo.java` | 资源获取即初始化（RAII），与 try-with-resources 对照 |
+| `HashCollisionExplained.java` | 哈希冲突产生原因与链表/红黑树解决方案 |
 
 ---
 
