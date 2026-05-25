@@ -1,4 +1,4 @@
-package org.example.java_base_test.io.bio;
+package org.example.java_base_test.io.bio.showcase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
