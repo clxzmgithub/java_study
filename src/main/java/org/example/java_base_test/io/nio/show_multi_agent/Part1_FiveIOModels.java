@@ -43,7 +43,7 @@ class Part1_FiveIOModels {
         System.out.println("             外卖放桌上了才通知你（两阶段都是OS帮你完成）");
         System.out.println("             【关系】完全解耦，线程发起aio_read后立即返回");
         System.out.println("             【特点】整个IO由操作系统完成，完成后通过回调通知线程");
-        System.out.println("             【现状】Linux原生AIO在网络IO支持不成熟，仍以多路复用为主流");
+        System.out.println("             【现状】Linux原生AIO在网络IO支持不成熟，仍以多路复用为主流");//111
         System.out.println();
         System.out.println("═══ 以上就是5种IO模型的核心区别，下面是技术细节 ═══");
         System.out.println();
