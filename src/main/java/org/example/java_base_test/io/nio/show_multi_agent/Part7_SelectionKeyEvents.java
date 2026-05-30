@@ -36,11 +36,11 @@ class Part7_SelectionKeyEvents {
         System.out.println();
         System.out.println("═══ 以下是技术细节 ═══");
         System.out.println();
-        System.out.println("  OP_ACCEPT  = 16  ServerSocketChannel 专用");
+        System.out.println("  OP_ACCEPT  = 8   ServerSocketChannel 专用");
         System.out.println("    触发时机：TCP 三次握手完成，有新连接到来");
         System.out.println("    响应：serverChannel.accept() 得到 SocketChannel");
         System.out.println();
-        System.out.println("  OP_CONNECT = 8   客户端 SocketChannel 专用");
+        System.out.println("  OP_CONNECT = 4   客户端 SocketChannel 专用");
         System.out.println("    触发时机：非阻塞 connect() 的握手完成");
         System.out.println("    响应：必须调用 channel.finishConnect()");
         System.out.println("    不调用后果：channel 不可用，后续 read/write 报错");
@@ -51,7 +51,7 @@ class Part7_SelectionKeyEvents {
         System.out.println("    ⚠️ 返回 -1 = 对端关闭，必须 key.cancel() + channel.close()");
         System.out.println("    ⚠️ 返回 0  = 非阻塞模式下没数据，稍后再来");
         System.out.println();
-        System.out.println("  OP_WRITE   = 4   最容易误用！");
+        System.out.println("  OP_WRITE   = 2   最容易误用！");
         System.out.println("    含义：Socket 发送缓冲区有空间，可以写数据");
         System.out.println();
         System.out.println("    ⚠️ 陷阱：发送缓冲区「几乎一直有空间」");

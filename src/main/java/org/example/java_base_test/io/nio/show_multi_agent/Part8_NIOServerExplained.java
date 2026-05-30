@@ -119,12 +119,19 @@ class Part8_NIOServerExplained {
         System.out.println();
         System.out.println("Netty 解决的原生 NIO 七宗罪：");
         System.out.println("  ① Buffer flip/clear 容易搞错  → ByteBuf 双指针，无需 flip");
+        System.out.println("     原生NIO需手动切换读写模式，易遗漏；ByteBuf自动管理readerIndex/writerIndex");
         System.out.println("  ② 粘包/拆包需自己处理         → 内置多种 FrameDecoder");
+        System.out.println("     TCP流式协议无消息边界；Netty提供长度/分隔符等解码器自动处理");
         System.out.println("  ③ JDK Selector epoll 空轮询 Bug→ 检测重建 Selector");
+        System.out.println("     Linux下select()可能立即返回导致CPU 100%；Netty检测后自动重建");
         System.out.println("  ④ 异常处理繁琐                → Pipeline 统一处理");
+        System.out.println("     原生NIO到处try-catch；Netty通过责任链在末尾统一捕获异常");
         System.out.println("  ⑤ 无连接池                    → Channel 对象池");
+        System.out.println("     频繁创建销毁Channel开销大；Netty提供ChannelPool复用连接");
         System.out.println("  ⑥ 无编解码                    → 内置 HTTP/WebSocket/自定义");
+        System.out.println("     原生NIO只传字节；Netty内置HTTP/Protobuf/JSON等编解码器");
         System.out.println("  ⑦ 无心跳机制                  → IdleStateHandler");
+        System.out.println("     需手动实现心跳检测；Netty可配置空闲超时自动触发事件");
         System.out.println();
         NIODemo.printSeparator();
     }

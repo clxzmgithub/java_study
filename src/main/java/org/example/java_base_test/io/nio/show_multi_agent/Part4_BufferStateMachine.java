@@ -70,6 +70,39 @@ import java.nio.ByteBuffer;
 // ====================================================================
 class Part4_BufferStateMachine {
 
+    // ── 前置知识：GC 与内存管理范围 ───────────────────────────────────────
+    //
+    // GC（Garbage Collection，垃圾回收）只管 JVM 堆内的内存：
+    //
+    //   物理内存整体布局：
+    //   ┌────────────────────────────────┐
+    //   │     整个物理内存 (RAM)          │
+    //   ├────────────────────────────────┤
+    //   │  ┌──────────────────────────┐  │
+    //   │  │  JVM 进程空间             │  │ ← GC 只管理这里
+    //   │  │  ┌────────────────────┐  │  │
+    //   │  │  │  JVM 堆 (Heap)     │  │  │ ← GC 主要工作区
+    //   │  │  │  - 对象实例         │  │  │   （会移动对象地址）
+    //   │  │  │  - 数组             │  │  │
+    //   │  │  └────────────────────┘  │  │
+    //   │  └──────────────────────────┘  │
+    //   │                                │
+    //   │  ┌──────────────────────────┐  │
+    //   │  │  堆外内存                 │  │ ← GC 不管这里
+    //   │  │  - Direct Buffer        │  │   （地址固定不变）
+    //   │  │  - mmap 映射文件         │  │
+    //   │  │  - JNI native 内存      │  │
+    //   │  └──────────────────────────┘  │
+    //   └────────────────────────────────┘
+    //
+    // 关键洞察：
+    //   • Heap Buffer 在 JVM 堆内 → GC 会移动它的地址 → DMA 不能用
+    //   • Direct Buffer 在堆外 → GC 碰不到 → 地址固定 → DMA 可以直接用
+    //   • 所以 Heap Buffer IO 需要额外拷贝：堆内 → 堆外临时区 → 内核
+    //   • Direct Buffer IO 少一次拷贝：堆外Direct → 内核
+    //
+    // ────────────────────────────────────────────────────────────────────
+
     static void demonstrate() {
         System.out.println("【第四部分：Buffer 三指针状态机（flip / clear / compact）】");
         System.out.println();
@@ -107,6 +140,12 @@ class Part4_BufferStateMachine {
         System.out.println("         但 C 还没播完，不能直接清空！");
         System.out.println("    compact() 做的事：把 C 移到最前面，然后录音头从 C 后面开始");
         System.out.println("    这样下次可以先听 C 再听 D（粘包处理的核心！）");
+        System.out.println();
+        System.out.println("  💡 关键理解：为什么 AB 被覆盖没关系？");
+        System.out.println("    因为 AB 已经播放完了（已读取并处理），不需要再保留");
+        System.out.println("    Buffer 的设计哲学：「读完即弃」—— position 之前的数据都是已处理的垃圾");
+        System.out.println("    compact() 只关心保留 [position, limit) 区间的未读数据");
+        System.out.println("    已读数据被覆盖是正确且必要的行为，为后续写入腾出空间");
         System.out.println();
         System.out.println("═══ 以下是技术演示（对照上面的比喻来看）═══");
         System.out.println();
@@ -234,8 +273,8 @@ class Part4_BufferStateMachine {
         System.out.println("  │ flip()    │ limit=position, position=0   │ 写完数据，准备读取/发送      │");
         System.out.println("  │           │ 写模式 → 读模式              │ channel.write(buf)之前必调   │");
         System.out.println("  ├───────────┼──────────────────────────────┼──────────────────────────────┤");
-        System.out.println("  │ clear()   │ position=0, limit=capacity   │ 数据已全部读完，复用Buffer   │");
-        System.out.println("  │           │ 任意 → 写模式（不清数据）    │ ⚠ 未读数据会丢失！          │");
+        System.out.println("  │ clear()   │ position=0, limit=capacity   │ 重置指针，从头开始写入    │");
+        System.out.println("  │           │ 任意 → 写模式（不清数据）    │ ⚠ 未读数据会被覆盖！     │");
         System.out.println("  ├───────────┼──────────────────────────────┼──────────────────────────────┤");
         System.out.println("  │ compact() │ 未读数据移到头部             │ 处理粘包/半包，保留未读数据  │");
         System.out.println("  │           │ position=剩余量,limit=cap    │ 读模式 → 写模式（保留数据）  │");
