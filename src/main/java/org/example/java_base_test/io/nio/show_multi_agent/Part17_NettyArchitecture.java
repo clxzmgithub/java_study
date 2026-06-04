@@ -264,7 +264,7 @@ class Part17_NettyArchitecture {
         System.out.println();
         System.out.println("  Step2：接待员迎接（EventLoop 处理 OP_READ 事件）");
         System.out.println("    接待员把顾客带到等候区（channel.read → 数据从 Socket 搬到 ByteBuf）");
-        System.out.println("    喊一声："有客人来了！"（触发 pipeline.fireChannelRead）");
+        System.out.println("    喊一声：'有客人来了！'（触发 pipeline.fireChannelRead）");
         System.out.println();
         System.out.println("  Step3：流水线处理（ByteBuf 流过 Pipeline - Inbound 方向）");
         System.out.println("    [接待员] → [翻译员] → [厨师] → [经理]");
@@ -274,7 +274,7 @@ class Part17_NettyArchitecture {
         System.out.println("    每个环节做完，交给下一环节（ctx.fireChannelRead 传给下一个）");
         System.out.println();
         System.out.println("  Step4：经理准备回应（BusinessHandler 写响应）");
-        System.out.println("    经理说："菜做好了，打包给顾客"（ctx.writeAndFlush）");
+        System.out.println("    经理说：'菜做好了，打包给顾客'（ctx.writeAndFlush）");
         System.out.println();
         System.out.println("  Step5：打包送出（响应流过 Pipeline - Outbound 方向）");
         System.out.println("    [经理] → [打包员] → [贴标签员] → [外卖员]");
