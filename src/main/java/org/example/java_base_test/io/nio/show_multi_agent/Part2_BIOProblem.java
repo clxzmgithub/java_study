@@ -85,7 +85,7 @@ class Part2_BIOProblem {
         System.out.println();
         System.out.println("    共同优势：轻松处理 10 万并发连接");
         System.out.println("    → 这是 Netty / 现代 Tomcat（NIO 模式）的基础");
-        System.out.println();
+        System.out.println(); 
         NIODemo.printSeparator();
     }
 }

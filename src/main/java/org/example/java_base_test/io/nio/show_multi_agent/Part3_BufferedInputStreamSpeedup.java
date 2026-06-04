@@ -7,6 +7,10 @@ import java.nio.file.Path;
 
 class Part3_BufferedInputStreamSpeedup {
 
+    public static void main(String[] args) throws Exception {
+        explain();
+    }
+
     static void explain() throws Exception {
         System.out.println("【第三部分：BufferedInputStream 为什么能大幅提速】");
         System.out.println();
@@ -59,7 +63,7 @@ class Part3_BufferedInputStreamSpeedup {
         System.out.println();
 
         // 实际演示
-        System.out.println("实际性能演示（4MB 文件，8KB buffer）：");
+        System.out.println("实际性能演示（4MB 文件）：");
         Path tmpFile = Files.createTempFile("bio_test_", ".dat");
         byte[] data = new byte[4 * 1024 * 1024];
         for (int i = 0; i < data.length; i++) data[i] = (byte)(i % 256);
@@ -75,16 +79,16 @@ class Part3_BufferedInputStreamSpeedup {
 
         start = System.currentTimeMillis();
         try (FileInputStream fis = new FileInputStream(tmpFile.toFile())) {
-            byte[] buf = new byte[8192];
-            while (fis.read(buf) != -1) {}
+            // 逐字节读取，模拟最坏情况
+            while (fis.read() != -1) {}
         }
         long withoutBuf = System.currentTimeMillis() - start;
 
-        System.out.println("  BufferedInputStream：" + withBuf + "ms");
-        System.out.println("  FileInputStream 直接读（同 8KB 数组）：" + withoutBuf + "ms");
-        System.out.println("  （差距在字节级 read() 时更明显；大数组读时 JVM 内部也有缓冲优化）");
+        System.out.println("  BufferedInputStream（8KB缓冲 + 8KB数组读）：" + withBuf + "ms");
+        System.out.println("  FileInputStream 直接读（逐字节 read()）：" + withoutBuf + "ms");
+        System.out.println("  性能提升：" + (withoutBuf / Math.max(withBuf, 1)) + " 倍");
         System.out.println("  ★ 结论：永远给 FileInputStream 套 BufferedInputStream");
-        System.out.println("    除非你自己传入大的 byte[] 数组");
+        System.out.println("    尤其是当你需要逐字节或小字节读取时，差距可达数千倍！");
         Files.deleteIfExists(tmpFile);
         System.out.println();
         NIODemo.printSeparator();
