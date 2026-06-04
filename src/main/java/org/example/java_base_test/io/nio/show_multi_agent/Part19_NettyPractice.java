@@ -266,6 +266,61 @@ class Part19_NettyPractice {
         System.out.println("    // 第一个参数 quietPeriod=0：没有新任务时立即关闭");
         System.out.println("    // 第二个参数 timeout=5：最多等 5 秒");
         System.out.println();
+        
+        // ════════════════════════════════════════════════════════════════
+        // 第五节：核心知识点总结
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 5. 核心知识点总结（你需要掌握什么）━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println();
+        System.out.println("  【第一优先级：必须理解】");
+        System.out.println();
+        System.out.println("  1️⃣  Boss/Worker线程模型");
+        System.out.println("     Boss：只负责accept新连接（类似餐厅前台，1个线程足够）");
+        System.out.println("     Worker：负责IO读写+业务处理（类似服务员，CPU×2个线程）");
+        System.out.println("     为什么分离？提高并发性能，accept不阻塞IO处理");
+        System.out.println();
+        System.out.println("  2️⃣  Pipeline和Handler链");
+        System.out.println("     数据像流水线一样依次经过各个Handler");
+        System.out.println("     Inbound方向：拆包→解码→业务（从外到内）");
+        System.out.println("     Outbound方向：业务→编码→发送（从内到外）");
+        System.out.println("     顺序很重要！拆包必须在解码之前");
+        System.out.println();
+        System.out.println("  3️⃣  粘包/拆包处理");
+        System.out.println("     TCP是字节流，不保证消息边界");
+        System.out.println("     可能一次读到多条消息（粘包）或一条分多次（拆包）");
+        System.out.println("     必须定义消息边界：固定长度、分隔符、长度字段");
+        System.out.println("     Netty内置Decoder：LineBased/Delimiter/LengthField");
+        System.out.println();
+        System.out.println("  4️⃣  内存管理（ByteBuf引用计数）");
+        System.out.println("     SimpleChannelInboundHandler：自动release（推荐）");
+        System.out.println("     ChannelInboundHandlerAdapter：手动release");
+        System.out.println("     忘记release会导致堆外内存泄漏→OutOfMemoryError");
+        System.out.println("     原则：谁最后用，谁release");
+        System.out.println();
+        System.out.println("  【第二优先级：应该理解】");
+        System.out.println();
+        System.out.println("  5️⃣  异步编程（ChannelFuture）");
+        System.out.println("     Netty所有IO操作都是异步的，立即返回Future");
+        System.out.println("     ❌ 不要在EventLoop线程中调用sync()（会死锁）");
+        System.out.println("     ✅ 使用addListener添加回调（推荐）");
+        System.out.println("     可用常量：ChannelFutureListener.CLOSE等");
+        System.out.println();
+        System.out.println("  6️⃣  HTTP协议处理");
+        System.out.println("     HttpRequestDecoder：字节→HttpRequest+HttpContent");
+        System.out.println("     HttpObjectAggregator：聚合分片请求为FullHttpRequest");
+        System.out.println("     HttpResponseEncoder：HttpResponse→字节");
+        System.out.println("     Spring Boot底层就是这样工作的");
+        System.out.println();
+        System.out.println("  7️⃣  连接池");
+        System.out.println("     TCP三次握手耗时~1ms，高并发下频繁建连接性能差");
+        System.out.println("     复用连接：借acquire() → 使用 → 还release()");
+        System.out.println("     RPC框架（Dubbo/gRPC）都用连接池");
+        System.out.println("     借了必须还，否则连接泄漏");
+        System.out.println();
+        System.out.println("  8️⃣  优雅关闭");
+        System.out.println("     不要直接System.exit()！可能有未处理的请求");
+        System.out.println("     shutdownGracefully(quietPeriod, timeout, unit)");
+        System.out.println("     quietPeriod=0：无新任务立即关闭");
         NIODemo.printSeparator();
     }
 }
