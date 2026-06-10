@@ -1,0 +1,403 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1860" width="1600" height="1860">
+  <defs>
+    <style>
+      text { font-family: "PingFang SC","Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif; }
+    </style>
+    <filter id="sd">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#00000018"/>
+    </filter>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#9e9e9e"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1600" height="1860" fill="#f0f4ff"/>
+
+  <!-- 顶部主标题 -->
+  <rect x="0" y="0" width="1600" height="96" fill="#0d1b3e"/>
+  <text x="800" y="38" text-anchor="middle" font-size="25" font-weight="bold" fill="#e8eaf6">📚 Java 语言核心 &amp; 计算机基础理论 · 知识体系全景图</text>
+  <text x="800" y="64" text-anchor="middle" font-size="13" fill="#9fa8da">java_study · 🔵 基础理论层 · 打地基 · 14 大板块</text>
+  <text x="800" y="84" text-anchor="middle" font-size="11" fill="#7986cb">优先级: 🔴核心必学  🟠重要补充  🟡按需拓展  🔵了解即可</text>
+
+  <!-- 学习主线横条 -->
+  <rect x="20" y="106" width="1560" height="52" rx="10" fill="#1a2a6c" filter="url(#sd)"/>
+  <text x="800" y="124" text-anchor="middle" font-size="12" fill="#c5cae9">📌 推荐学习主线</text>
+  <text x="800" y="148" text-anchor="middle" font-size="12" fill="#e8eaf6">① Java语言核心 → ③ JVM原理 → ② 并发深度 → ④ IO/NIO → ⑤ 算法数据结构 → ⑥ 设计模式 → ⑦ 计算机理论(穿插) → ⑨ 安全 → ⑫ 性能 → ⑬ 调试 → ⑧ 源码研读 → ⑭ 前沿趋势</text>
+
+  <!-- ======== 第一行 4个板块 ======== -->
+
+  <!-- 1. Java语言核心 -->
+  <rect x="20" y="170" width="378" height="288" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="20" y="170" width="378" height="44" rx="10" fill="#1565c0"/>
+  <rect x="20" y="200" width="378" height="14" fill="#1565c0"/>
+  <text x="36" y="199" font-size="14" font-weight="bold" fill="#fff">🏗️ ① Java 语言核心</text>
+  <rect x="344" y="177" width="46" height="20" rx="10" fill="#ef5350"/>
+  <text x="367" y="191" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🔴核心</text>
+  <text x="36" y="232" font-size="12" fill="#37474f">· 类型系统 / 泛型 / 类型擦除机制</text>
+  <text x="36" y="252" font-size="12" fill="#37474f">· 反射 / MethodHandle / VarHandle</text>
+  <text x="36" y="272" font-size="12" fill="#37474f">· 动态代理 / CGLIB / ASM / ByteBuddy</text>
+  <text x="36" y="292" font-size="12" fill="#37474f">· Lambda / Stream / Optional / 函数式接口</text>
+  <text x="36" y="312" font-size="12" fill="#37474f">· SPI机制 / 内部类 / 序列化安全</text>
+  <text x="36" y="332" font-size="12" fill="#37474f">· 异常 / try-with-resources / RAII</text>
+  <text x="36" y="352" font-size="12" fill="#37474f">· equals/hashCode契约 / 集合框架选型</text>
+  <text x="36" y="372" font-size="12" fill="#37474f">· record / sealed / pattern matching (17+)</text>
+  <text x="36" y="396" font-size="11" fill="#1565c0">▸ 无前置依赖，所有学习的起点</text>
+  <text x="36" y="412" font-size="11" fill="#1565c0">▸ 代码: java_base_test/</text>
+
+  <!-- 2. Java并发深度 -->
+  <rect x="412" y="170" width="378" height="288" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="412" y="170" width="378" height="44" rx="10" fill="#6a1b9a"/>
+  <rect x="412" y="200" width="378" height="14" fill="#6a1b9a"/>
+  <text x="428" y="199" font-size="14" font-weight="bold" fill="#fff">⚡ ② Java 并发深度</text>
+  <rect x="736" y="177" width="46" height="20" rx="10" fill="#ef5350"/>
+  <text x="759" y="191" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🔴核心</text>
+  <text x="428" y="232" font-size="12" fill="#37474f">· volatile / JMM / happens-before规则</text>
+  <text x="428" y="252" font-size="12" fill="#37474f">· synchronized锁升级 / 对象头Mark Word</text>
+  <text x="428" y="272" font-size="12" fill="#37474f">· CAS / Unsafe / AtomicXxx / LongAdder</text>
+  <text x="428" y="292" font-size="12" fill="#37474f">· AQS / CLH队列 / ReentrantLock体系</text>
+  <text x="428" y="312" font-size="12" fill="#37474f">· ThreadPoolExecutor 七参数 / 拒绝策略</text>
+  <text x="428" y="332" font-size="12" fill="#37474f">· CompletableFuture / ForkJoinPool</text>
+  <text x="428" y="352" font-size="12" fill="#37474f">· ConcurrentHashMap / BlockingQueue系列</text>
+  <text x="428" y="372" font-size="12" fill="#37474f">· 虚拟线程(JDK21) / 结构化并发</text>
+  <text x="428" y="396" font-size="11" fill="#6a1b9a">▸ 前置: Java语言核心</text>
+  <text x="428" y="412" font-size="11" fill="#6a1b9a">▸ 代码: java_base_test/thread_aync/</text>
+
+  <!-- 3. JVM原理 -->
+  <rect x="804" y="170" width="378" height="288" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="804" y="170" width="378" height="44" rx="10" fill="#00695c"/>
+  <rect x="804" y="200" width="378" height="14" fill="#00695c"/>
+  <text x="820" y="199" font-size="14" font-weight="bold" fill="#fff">☕ ③ JVM 原理</text>
+  <rect x="1128" y="177" width="46" height="20" rx="10" fill="#ef5350"/>
+  <text x="1151" y="191" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🔴核心</text>
+  <text x="820" y="232" font-size="12" fill="#37474f">· 类加载: 加载/验证/准备/解析/初始化</text>
+  <text x="820" y="252" font-size="12" fill="#37474f">· 双亲委派 / 打破双亲委派 / 自定义CL</text>
+  <text x="820" y="272" font-size="12" fill="#37474f">· 对象内存布局 / 对象头 / 实例数据</text>
+  <text x="820" y="292" font-size="12" fill="#37474f">· 运行时数据区: 堆/栈/方法区/元空间</text>
+  <text x="820" y="312" font-size="12" fill="#37474f">· GC算法: 标记清除/整理/复制/分代</text>
+  <text x="820" y="332" font-size="12" fill="#37474f">· 收集器: G1/ZGC/Shenandoah 对比</text>
+  <text x="820" y="352" font-size="12" fill="#37474f">· 字节码 / JIT / C1/C2分层编译</text>
+  <text x="820" y="372" font-size="12" fill="#37474f">· 逃逸分析 / 方法内联 / AOT/GraalVM</text>
+  <text x="820" y="396" font-size="11" fill="#00695c">▸ 排查OOM/GC/性能问题的根本</text>
+  <text x="820" y="412" font-size="11" fill="#00695c">▸ 规划目录: jvm/</text>
+
+  <!-- 4. IO/NIO体系 -->
+  <rect x="1196" y="170" width="384" height="288" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="1196" y="170" width="384" height="44" rx="10" fill="#e65100"/>
+  <rect x="1196" y="200" width="384" height="14" fill="#e65100"/>
+  <text x="1212" y="199" font-size="14" font-weight="bold" fill="#fff">🔌 ④ IO / NIO 体系</text>
+  <rect x="1522" y="177" width="46" height="20" rx="10" fill="#ef5350"/>
+  <text x="1545" y="191" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🔴核心</text>
+  <text x="1212" y="232" font-size="12" fill="#37474f">· 五种IO模型 / BIO每连接一线程</text>
+  <text x="1212" y="252" font-size="12" fill="#37474f">· Buffer三指针状态机 / Channel类型</text>
+  <text x="1212" y="272" font-size="12" fill="#37474f">· Selector + epoll原理 / NIO Server</text>
+  <text x="1212" y="292" font-size="12" fill="#37474f">· 零拷贝: sendfile / mmap / transferTo</text>
+  <text x="1212" y="312" font-size="12" fill="#37474f">· NIO.2: Files / Path / WatchService</text>
+  <text x="1212" y="332" font-size="12" fill="#37474f">· Netty原理: EventLoop / Pipeline / ByteBuf</text>
+  <text x="1212" y="352" font-size="12" fill="#37474f">· Kafka NIO网络层 / mmap存储(印证)</text>
+  <text x="1212" y="372" font-size="12" fill="#37474f">· 虚拟线程与IO密集型场景</text>
+  <text x="1212" y="396" font-size="11" fill="#e65100">▸ 7层递进: BIO→NIO→零拷贝→Netty→框架</text>
+  <text x="1212" y="412" font-size="11" fill="#e65100">▸ 代码: java_base_test/io/ (Part1~23)</text>
+
+  <!-- ======== 第二行 4个板块 ======== -->
+
+  <!-- 5. 算法与数据结构 -->
+  <rect x="20" y="474" width="378" height="264" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="20" y="474" width="378" height="44" rx="10" fill="#1b5e20"/>
+  <rect x="20" y="504" width="378" height="14" fill="#1b5e20"/>
+  <text x="36" y="503" font-size="14" font-weight="bold" fill="#fff">🧮 ⑤ 算法与数据结构</text>
+  <rect x="344" y="481" width="46" height="20" rx="10" fill="#ef5350"/>
+  <text x="367" y="495" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🔴核心</text>
+  <text x="36" y="534" font-size="12" fill="#37474f">· 线性: 数组/链表/栈/队列/双端队列</text>
+  <text x="36" y="554" font-size="12" fill="#37474f">· 树: BST/AVL/红黑树/B+树/Trie</text>
+  <text x="36" y="574" font-size="12" fill="#37474f">· 哈希: 冲突解决/负载因子/HashMap扩容</text>
+  <text x="36" y="594" font-size="12" fill="#37474f">· 图: BFS/DFS/Dijkstra/Bellman/拓扑排序</text>
+  <text x="36" y="614" font-size="12" fill="#37474f">· 排序全谱 / DP / 回溯 / 贪心</text>
+  <text x="36" y="634" font-size="12" fill="#37474f">· JDK集合对照: ArrayList/HashMap/PQ</text>
+  <text x="36" y="680" font-size="11" fill="#1b5e20">▸ 前置: Java语言核心</text>
+  <text x="36" y="696" font-size="11" fill="#1b5e20">▸ 代码: algorithm/ + datastructures/</text>
+
+  <!-- 6. 设计模式 -->
+  <rect x="412" y="474" width="378" height="264" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="412" y="474" width="378" height="44" rx="10" fill="#4a148c"/>
+  <rect x="412" y="504" width="378" height="14" fill="#4a148c"/>
+  <text x="428" y="503" font-size="14" font-weight="bold" fill="#fff">🎨 ⑥ 设计模式</text>
+  <rect x="736" y="481" width="46" height="20" rx="10" fill="#fb8c00"/>
+  <text x="759" y="495" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🟠重要</text>
+  <text x="428" y="534" font-size="12" fill="#37474f">· 创建型: 单例/工厂方法/建造者/原型</text>
+  <text x="428" y="554" font-size="12" fill="#37474f">· 结构型: 代理/装饰器/适配器/外观/桥接</text>
+  <text x="428" y="574" font-size="12" fill="#37474f">· 行为型: 责任链/观察者/策略/模板方法</text>
+  <text x="428" y="594" font-size="12" fill="#37474f">· SOLID / DRY / KISS / YAGNI 原则表</text>
+  <text x="428" y="614" font-size="12" fill="#37474f">· 架构模式: CQRS / Event Sourcing / Saga</text>
+  <text x="428" y="634" font-size="12" fill="#37474f">· JDK/Spring中真实应用场景对照</text>
+  <text x="428" y="680" font-size="11" fill="#4a148c">▸ 前置: Java语言核心 + 并发</text>
+  <text x="428" y="696" font-size="11" fill="#4a148c">▸ 代码: designmodel/</text>
+
+  <!-- 7. 计算机基础理论 -->
+  <rect x="804" y="474" width="378" height="264" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="804" y="474" width="378" height="44" rx="10" fill="#33691e"/>
+  <rect x="804" y="504" width="378" height="14" fill="#33691e"/>
+  <text x="820" y="503" font-size="14" font-weight="bold" fill="#fff">🖥️ ⑦ 计算机基础理论</text>
+  <rect x="1128" y="481" width="46" height="20" rx="10" fill="#fb8c00"/>
+  <text x="1151" y="495" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🟠重要</text>
+  <text x="820" y="530" font-size="12" fill="#37474f">📁 操作系统: 进程/线程/调度/内存管理</text>
+  <text x="836" y="548" font-size="11" fill="#546e7a">  同步原语/死锁/虚拟内存/文件系统</text>
+  <text x="820" y="568" font-size="12" fill="#37474f">📡 计算机网络: TCP/IP/HTTP/HTTPS/TLS</text>
+  <text x="836" y="586" font-size="11" fill="#546e7a">  UDP/WebSocket/DNS/三次握手</text>
+  <text x="820" y="606" font-size="12" fill="#37474f">⚙️ 计算机原理: CPU流水线/Cache/内存屏障</text>
+  <text x="820" y="626" font-size="12" fill="#37474f">🔤 编译原理: 词法/语法/语义/代码生成</text>
+  <text x="820" y="680" font-size="11" fill="#33691e">▸ 可穿插主线任意阶段学习</text>
+  <text x="820" y="696" font-size="11" fill="#33691e">▸ 代码: operate_system/ compute_network/ 等</text>
+
+  <!-- 8. 优秀源码研读 -->
+  <rect x="1196" y="474" width="384" height="264" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="1196" y="474" width="384" height="44" rx="10" fill="#bf360c"/>
+  <rect x="1196" y="504" width="384" height="14" fill="#bf360c"/>
+  <text x="1212" y="503" font-size="14" font-weight="bold" fill="#fff">🔬 ⑧ 优秀源码研读</text>
+  <rect x="1522" y="481" width="46" height="20" rx="10" fill="#fdd835"/>
+  <text x="1545" y="495" text-anchor="middle" font-size="10" font-weight="bold" fill="#37474f">🟡进阶</text>
+  <text x="1212" y="530" font-size="12" fill="#37474f">📦 JDK核心: HashMap/ConcurrentHashMap</text>
+  <text x="1228" y="548" font-size="11" fill="#546e7a">  AQS / ThreadPoolExecutor / IO体系</text>
+  <text x="1212" y="568" font-size="12" fill="#37474f">📊 Kafka: NIO Selector网络层</text>
+  <text x="1228" y="586" font-size="11" fill="#546e7a">  FileChannel mmap存储层</text>
+  <text x="1212" y="606" font-size="12" fill="#37474f">🚀 RocketMQ: CommitLog mmap存储</text>
+  <text x="1228" y="624" font-size="11" fill="#546e7a">  Netty通信层原理印证</text>
+  <text x="1212" y="644" font-size="12" fill="#37474f">🔗 RPC: Dubbo SPI / gRPC HTTP/2帧结构</text>
+  <text x="1212" y="680" font-size="11" fill="#bf360c">▸ 前置: 1~7板块综合 · 以"印证原理"为目标</text>
+  <text x="1212" y="696" font-size="11" fill="#bf360c">▸ 代码: source_code_study/</text>
+
+  <!-- ======== 第三行 4个板块 ======== -->
+
+  <!-- 9. 信息安全基础 -->
+  <rect x="20" y="754" width="378" height="240" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="20" y="754" width="378" height="44" rx="10" fill="#b71c1c"/>
+  <rect x="20" y="784" width="378" height="14" fill="#b71c1c"/>
+  <text x="36" y="783" font-size="14" font-weight="bold" fill="#fff">🔐 ⑨ 信息安全基础</text>
+  <rect x="344" y="761" width="46" height="20" rx="10" fill="#fb8c00"/>
+  <text x="367" y="775" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🟠重要</text>
+  <text x="36" y="814" font-size="12" fill="#37474f">· 对称加密: AES/DES/ChaCha20</text>
+  <text x="36" y="834" font-size="12" fill="#37474f">· 非对称: RSA/ECC/ECDH密钥交换</text>
+  <text x="36" y="854" font-size="12" fill="#37474f">· 哈希/MAC/数字签名/CA证书体系</text>
+  <text x="36" y="874" font-size="12" fill="#37474f">· HTTPS/TLS握手 / JWT/OAuth2原理</text>
+  <text x="36" y="894" font-size="12" fill="#37474f">· XSS/CSRF/SQLi/SSRF漏洞防御</text>
+  <text x="36" y="950" font-size="11" fill="#b71c1c">▸ 规划目录: security/</text>
+
+  <!-- 10. 软件工程基础 -->
+  <rect x="412" y="754" width="378" height="240" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="412" y="754" width="378" height="44" rx="10" fill="#37474f"/>
+  <rect x="412" y="784" width="378" height="14" fill="#37474f"/>
+  <text x="428" y="783" font-size="14" font-weight="bold" fill="#fff">🏛️ ⑩ 软件工程基础</text>
+  <rect x="736" y="761" width="46" height="20" rx="10" fill="#fb8c00"/>
+  <text x="759" y="775" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🟠重要</text>
+  <text x="428" y="814" font-size="12" fill="#37474f">· SOLID / DRY / KISS / YAGNI原则</text>
+  <text x="428" y="834" font-size="12" fill="#37474f">· 测试理论: TDD / BDD / 测试金字塔</text>
+  <text x="428" y="854" font-size="12" fill="#37474f">· 单元测试实践 / JaCoCo覆盖率</text>
+  <text x="428" y="874" font-size="12" fill="#37474f">· 重构方法论 / 代码坏味道识别</text>
+  <text x="428" y="894" font-size="12" fill="#37474f">· CI/CD工程化 / Code Review文化</text>
+  <text x="428" y="950" font-size="11" fill="#546e7a">▸ 规划目录: software-engineering/</text>
+
+  <!-- 11. 数学基础 -->
+  <rect x="804" y="754" width="378" height="240" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="804" y="754" width="378" height="44" rx="10" fill="#006064"/>
+  <rect x="804" y="784" width="378" height="14" fill="#006064"/>
+  <text x="820" y="783" font-size="14" font-weight="bold" fill="#fff">📐 ⑪ 数学基础</text>
+  <rect x="1128" y="761" width="46" height="20" rx="10" fill="#fdd835"/>
+  <text x="1151" y="775" text-anchor="middle" font-size="10" font-weight="bold" fill="#37474f">🟡按需</text>
+  <text x="820" y="814" font-size="12" fill="#37474f">· 离散数学: 图论/集合论/逻辑</text>
+  <text x="820" y="834" font-size="12" fill="#37474f">· 概率统计: 贝叶斯/分布/随机过程</text>
+  <text x="820" y="854" font-size="12" fill="#37474f">· 线性代数: 矩阵/向量空间基础</text>
+  <text x="820" y="874" font-size="12" fill="#37474f">· 数论: 模运算/质数/RSA数学支撑</text>
+  <text x="820" y="894" font-size="12" fill="#37474f">· 信息论: 熵/霍夫曼/编码理论</text>
+  <text x="820" y="950" font-size="11" fill="#006064">▸ 规划目录: math/</text>
+
+  <!-- 12. 性能工程 -->
+  <rect x="1196" y="754" width="384" height="240" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="1196" y="754" width="384" height="44" rx="10" fill="#4527a0"/>
+  <rect x="1196" y="784" width="384" height="14" fill="#4527a0"/>
+  <text x="1212" y="783" font-size="14" font-weight="bold" fill="#fff">🚀 ⑫ 性能工程</text>
+  <rect x="1522" y="761" width="46" height="20" rx="10" fill="#fdd835"/>
+  <text x="1545" y="775" text-anchor="middle" font-size="10" font-weight="bold" fill="#37474f">🟡进阶</text>
+  <text x="1212" y="814" font-size="12" fill="#37474f">· 性能分析方法论 / USE/RED指标模型</text>
+  <text x="1212" y="834" font-size="12" fill="#37474f">· JMH基准测试 / Throughput/Latency</text>
+  <text x="1212" y="854" font-size="12" fill="#37474f">· 火焰图 / async-profiler / JFR录制</text>
+  <text x="1212" y="874" font-size="12" fill="#37474f">· GC停顿调优 / 内存泄漏定位</text>
+  <text x="1212" y="894" font-size="12" fill="#37474f">· 锁竞争优化 / IO优化 / 缓存友好性</text>
+  <text x="1212" y="950" font-size="11" fill="#4527a0">▸ 规划目录: performance/</text>
+
+  <!-- ======== 第四行: 调试排查(宽) + 前沿趋势(更宽) ======== -->
+
+  <!-- 13. 调试与问题排查 -->
+  <rect x="20" y="1010" width="578" height="240" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="20" y="1010" width="578" height="44" rx="10" fill="#212121"/>
+  <rect x="20" y="1040" width="578" height="14" fill="#212121"/>
+  <text x="36" y="1039" font-size="14" font-weight="bold" fill="#fff">🐛 ⑬ 调试与问题排查</text>
+  <rect x="544" y="1017" width="46" height="20" rx="10" fill="#fb8c00"/>
+  <text x="567" y="1031" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🟠重要</text>
+  <text x="36" y="1070" font-size="12" fill="#37474f">🔧 JVM工具链: jstack / jmap / jstat / jcmd</text>
+  <text x="36" y="1090" font-size="12" fill="#37474f">⚡ Arthas: trace/watch/monitor/热更新/OGNL表达式</text>
+  <text x="36" y="1110" font-size="12" fill="#37474f">📊 JFR + JMC: 生产事件录制/系统级性能画像</text>
+  <text x="36" y="1130" font-size="12" fill="#37474f">💀 OOM排查: heap dump / MAT / 内存泄漏溯源</text>
+  <text x="36" y="1150" font-size="12" fill="#37474f">🧵 死锁/CPU飙高: jstack线程快照分析方法论</text>
+  <text x="36" y="1170" font-size="12" fill="#37474f">🐧 Linux: top/strace/tcpdump/lsof/sar</text>
+  <text x="36" y="1206" font-size="11" fill="#455a64">▸ 前置: JVM + 并发 + IO   ▸ 规划目录: debugging/</text>
+
+  <!-- 14. 前沿技术趋势 -->
+  <rect x="612" y="1010" width="968" height="240" rx="10" fill="#fff" filter="url(#sd)"/>
+  <rect x="612" y="1010" width="968" height="44" rx="10" fill="#01579b"/>
+  <rect x="612" y="1040" width="968" height="14" fill="#01579b"/>
+  <text x="628" y="1039" font-size="14" font-weight="bold" fill="#fff">🔭 ⑭ 前沿技术趋势</text>
+  <rect x="1522" y="1017" width="46" height="20" rx="10" fill="#5c6bc0"/>
+  <text x="1545" y="1031" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">🔵了解</text>
+
+  <!-- 三列内容 -->
+  <text x="628" y="1068" font-size="12" font-weight="bold" fill="#01579b">📋 JDK版本速查</text>
+  <text x="628" y="1086" font-size="11" fill="#37474f">JDK 8: Lambda/Stream/Optional/java.time/元空间</text>
+  <text x="628" y="1104" font-size="11" fill="#37474f">JDK 11: HTTP Client/var/ZGC实验/OpenJDK等同</text>
+  <text x="628" y="1122" font-size="11" fill="#37474f">JDK 17: record/sealed/文本块/模式匹配instanceof</text>
+  <text x="628" y="1140" font-size="11" fill="#37474f">JDK 21 ✅: 虚拟线程/结构化并发/Sequenced Collections</text>
+  <text x="628" y="1158" font-size="11" fill="#37474f">JDK 22+: Panama✅/Stream.gather/ScopedValues</text>
+  <text x="628" y="1178" font-size="11" fill="#0d47a1">推荐: 新项目→JDK21, 存量→JDK17, 面试→17+21</text>
+
+  <text x="980" y="1068" font-size="12" font-weight="bold" fill="#01579b">🏗️ Java Platform Projects</text>
+  <text x="980" y="1086" font-size="11" fill="#37474f">Loom ✅: 虚拟线程/结构化并发 (JDK 21正式)</text>
+  <text x="980" y="1104" font-size="11" fill="#37474f">Panama ✅: 外部函数&amp;内存API (JDK 22标准化)</text>
+  <text x="980" y="1122" font-size="11" fill="#37474f">Valhalla 🔥: 值类型/原始类泛型 (进行中)</text>
+  <text x="980" y="1140" font-size="11" fill="#37474f">Amber ✅: record/sealed/pattern (持续交付)</text>
+  <text x="980" y="1158" font-size="11" fill="#37474f">Leyden 🔜: 启动时间/AOT类加载 (早期阶段)</text>
+  <text x="980" y="1180" font-size="12" font-weight="bold" fill="#01579b">🌐 跨语言视野</text>
+  <text x="980" y="1198" font-size="11" fill="#37474f">Rust: 所有权/无GC/对JVM设计启发</text>
+
+  <text x="1320" y="1068" font-size="12" font-weight="bold" fill="#01579b">☁️ 云原生 &amp; AI时代</text>
+  <text x="1320" y="1086" font-size="11" fill="#37474f">GraalVM Native Image: AOT/冷启动优化</text>
+  <text x="1320" y="1104" font-size="11" fill="#37474f">容器基础: Docker namespace/cgroup原理</text>
+  <text x="1320" y="1122" font-size="11" fill="#37474f">K8s: Pod/Service/Deployment核心概念</text>
+  <text x="1320" y="1140" font-size="11" fill="#37474f">WASM: 与JVM对比/服务端应用</text>
+  <text x="1320" y="1158" font-size="11" fill="#37474f">Go并发: goroutine/CSP vs 虚拟线程</text>
+  <text x="1320" y="1180" font-size="11" fill="#37474f">Spring AI / LangChain4j: AI时代Java框架</text>
+  <text x="1320" y="1198" font-size="11" fill="#37474f">规划目录: frontier/</text>
+
+  <!-- ======== 知识依赖图 ======== -->
+  <rect x="20" y="1268" width="1560" height="270" rx="12" fill="#fff" filter="url(#sd)"/>
+  <rect x="20" y="1268" width="1560" height="44" rx="12" fill="#263238"/>
+  <rect x="20" y="1298" width="1560" height="14" fill="#263238"/>
+  <text x="800" y="1297" text-anchor="middle" font-size="14" font-weight="bold" fill="#eceff1">🗺️ 知识依赖关系图 · 学习主线可视化</text>
+
+  <!-- 主线节点行1 -->
+  <rect x="42" y="1328" width="136" height="38" rx="19" fill="#1565c0"/>
+  <text x="110" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">① Java语言核心</text>
+  <line x1="178" y1="1347" x2="218" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="218" y="1328" width="110" height="38" rx="19" fill="#00695c"/>
+  <text x="273" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">③ JVM原理</text>
+  <line x1="328" y1="1347" x2="368" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="368" y="1328" width="110" height="38" rx="19" fill="#6a1b9a"/>
+  <text x="423" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">② 并发深度</text>
+  <line x1="478" y1="1347" x2="518" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="518" y="1328" width="108" height="38" rx="19" fill="#e65100"/>
+  <text x="572" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">④ IO/NIO</text>
+  <line x1="626" y1="1347" x2="666" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="666" y="1328" width="130" height="38" rx="19" fill="#1b5e20"/>
+  <text x="731" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">⑤ 算法&amp;数据结构</text>
+  <line x1="796" y1="1347" x2="836" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="836" y="1328" width="106" height="38" rx="19" fill="#4a148c"/>
+  <text x="889" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">⑥ 设计模式</text>
+  <line x1="942" y1="1347" x2="982" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="982" y="1328" width="126" height="38" rx="19" fill="#b71c1c"/>
+  <text x="1045" y="1345" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">⑨ 信息安全</text>
+  <text x="1045" y="1360" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">⑫ 性能工程</text>
+  <line x1="1108" y1="1347" x2="1148" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="1148" y="1328" width="110" height="38" rx="19" fill="#212121"/>
+  <text x="1203" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">⑬ 调试排查</text>
+  <line x1="1258" y1="1347" x2="1298" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="1298" y="1328" width="110" height="38" rx="19" fill="#bf360c"/>
+  <text x="1353" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">⑧ 源码研读</text>
+  <line x1="1408" y1="1347" x2="1448" y2="1347" stroke="#9e9e9e" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="1448" y="1328" width="110" height="38" rx="19" fill="#01579b"/>
+  <text x="1503" y="1352" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">⑭ 前沿趋势</text>
+
+  <!-- 穿插说明 -->
+  <rect x="42" y="1390" width="240" height="36" rx="8" fill="#e8f5e9"/>
+  <text x="162" y="1403" text-anchor="middle" font-size="11" fill="#2e7d32">⑦ 计算机基础理论(穿插全程)</text>
+  <text x="162" y="1418" text-anchor="middle" font-size="10" fill="#388e3c">OS / 网络 / 原理 / 编译</text>
+  <path d="M 162 1388 L 162 1366 L 273 1366" fill="none" stroke="#66bb6a" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <rect x="368" y="1390" width="240" height="36" rx="8" fill="#fce4ec"/>
+  <text x="488" y="1403" text-anchor="middle" font-size="11" fill="#880e4f">⑩ 软件工程基础(按需)</text>
+  <text x="488" y="1418" text-anchor="middle" font-size="10" fill="#ad1457">⑪ 数学基础(按需)</text>
+  <path d="M 488 1388 L 488 1366 L 423 1366" fill="none" stroke="#f48fb1" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <text x="800" y="1455" text-anchor="middle" font-size="11" fill="#546e7a">💡 虚线表示"按需/穿插"，实线+箭头表示"前置依赖推荐顺序"</text>
+  <text x="800" y="1475" text-anchor="middle" font-size="11" fill="#546e7a">⑦计算机基础理论可在学①之后随时穿插；⑩软件工程/⑪数学按当前需要随时切入</text>
+  <text x="800" y="1495" text-anchor="middle" font-size="11" fill="#546e7a">⑫性能工程需要③JVM+④IO+②并发+⑤算法综合基础；⑬调试排查同样依赖③+②+④</text>
+
+  <!-- ======== 底部代码目录速查 ======== -->
+  <rect x="20" y="1555" width="1560" height="200" rx="12" fill="#fff" filter="url(#sd)"/>
+  <rect x="20" y="1555" width="1560" height="40" rx="12" fill="#37474f"/>
+  <rect x="20" y="1581" width="1560" height="14" fill="#37474f"/>
+  <text x="800" y="1580" text-anchor="middle" font-size="14" font-weight="bold" fill="#eceff1">📁 项目代码目录速查（已有 vs 规划）</text>
+
+  <text x="50" y="1615" font-size="12" font-weight="bold" fill="#1565c0">java_base_test/</text>
+  <text x="50" y="1633" font-size="11" fill="#546e7a">├── *.java (语言核心)</text>
+  <text x="50" y="1649" font-size="11" fill="#546e7a">├── proxy_aop/ (代理原理)</text>
+  <text x="50" y="1665" font-size="11" fill="#546e7a">├── thread_aync/ (并发)</text>
+  <text x="50" y="1681" font-size="11" fill="#546e7a">├── io/ (BIO/NIO Part1~23)</text>
+  <text x="50" y="1697" font-size="11" fill="#546e7a">└── multi_agent/ (示例)</text>
+
+  <text x="270" y="1615" font-size="12" font-weight="bold" fill="#1b5e20">algorithm/</text>
+  <text x="270" y="1633" font-size="11" fill="#546e7a">LeetCode风格算法</text>
+  <text x="270" y="1655" font-size="12" font-weight="bold" fill="#1b5e20">datastructures/</text>
+  <text x="270" y="1673" font-size="11" fill="#546e7a">数据结构手写实现</text>
+  <text x="270" y="1695" font-size="12" font-weight="bold" fill="#4a148c">designmodel/</text>
+  <text x="270" y="1713" font-size="11" fill="#546e7a">23种GoF设计模式</text>
+
+  <text x="490" y="1615" font-size="12" font-weight="bold" fill="#33691e">计算机基础四模块</text>
+  <text x="490" y="1633" font-size="11" fill="#546e7a">operate_system/</text>
+  <text x="490" y="1649" font-size="11" fill="#546e7a">compute_network/</text>
+  <text x="490" y="1665" font-size="11" fill="#546e7a">computer_principle/</text>
+  <text x="490" y="1681" font-size="11" fill="#546e7a">compiler_principle/</text>
+
+  <text x="710" y="1615" font-size="12" font-weight="bold" fill="#bf360c">source_code_study/</text>
+  <text x="710" y="1633" font-size="11" fill="#546e7a">├── jdk/</text>
+  <text x="710" y="1649" font-size="11" fill="#546e7a">├── kafka/</text>
+  <text x="710" y="1665" font-size="11" fill="#546e7a">├── rocketmq/</text>
+  <text x="710" y="1681" font-size="11" fill="#546e7a">└── rpc/</text>
+
+  <text x="930" y="1615" font-size="12" font-weight="bold" fill="#78909c">规划目录（未来创建）</text>
+  <text x="930" y="1633" font-size="11" fill="#b0bec5">jvm/ (JVM原理实验)</text>
+  <text x="930" y="1649" font-size="11" fill="#b0bec5">security/ (信息安全)</text>
+  <text x="930" y="1665" font-size="11" fill="#b0bec5">software-engineering/</text>
+  <text x="930" y="1681" font-size="11" fill="#b0bec5">math/ (数学基础)</text>
+  <text x="930" y="1697" font-size="11" fill="#b0bec5">performance/ debugging/ frontier/</text>
+
+  <!-- 三项目联动 -->
+  <rect x="1150" y="1598" width="410" height="152" rx="10" fill="#e8eaf6"/>
+  <text x="1355" y="1620" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">🔗 三项目联动关系</text>
+  <rect x="1170" y="1630" width="120" height="30" rx="15" fill="#1565c0"/>
+  <text x="1230" y="1650" text-anchor="middle" font-size="11" fill="#fff">🔵 java_study</text>
+  <text x="1230" y="1672" text-anchor="middle" font-size="10" fill="#283593">基础理论 · 打地基</text>
+
+  <line x1="1295" y1="1645" x2="1335" y2="1645" stroke="#aaa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <rect x="1335" y="1630" width="160" height="30" rx="15" fill="#e65100"/>
+  <text x="1415" y="1650" text-anchor="middle" font-size="11" fill="#fff">🟠 java_fullstack</text>
+  <text x="1415" y="1672" text-anchor="middle" font-size="10" fill="#bf360c">工程实践 · 做系统</text>
+
+  <line x1="1230" y1="1685" x2="1230" y2="1705" stroke="#aaa" stroke-width="1.2" marker-end="url(#arr)"/>
+  <rect x="1290" y="1705" width="160" height="30" rx="15" fill="#4a148c"/>
+  <text x="1370" y="1725" text-anchor="middle" font-size="11" fill="#fff">🟣 ai_coding_harness</text>
+  <text x="1370" y="1738" text-anchor="middle" font-size="10" fill="#4a148c">AI工程 · 用AI提效</text>
+
+  <!-- 底部 footer -->
+  <rect x="0" y="1770" width="1600" height="90" fill="#0d1b3e"/>
+  <text x="800" y="1800" text-anchor="middle" font-size="13" fill="#9fa8da">📅 更新至 v1.3.0  ·  2026-06-10</text>
+  <text x="800" y="1822" text-anchor="middle" font-size="12" fill="#7986cb">java_study/docs/knowledge-map.svg · 持续更新中 🚀</text>
+  <text x="800" y="1848" text-anchor="middle" font-size="11" fill="#5c6bc0">打好地基，才能盖高楼</text>
+</svg>
