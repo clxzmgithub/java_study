@@ -25,9 +25,9 @@
 >
 > | 项目 | 定位 | 核心聚焦 |
 > |------|:----:|---------|
-> | **本项目**（`java_study`） | 🔵 基础理论 | Java 语言核心、并发深度、JVM 原理、IO/NIO 体系、数据结构与算法、设计模式、计算机基础理论、信息安全基础、软件工程基础、性能工程、调试排查——**打地基** |
-> | [`java_fullstack_ai_agent_study`](../java_fullstack_ai_agent_study) | 🟠 工程实践 | Spring 生态、分布式架构、大数据、存储中间件、风控爬虫、数据分析、多语言、AI/Agent 系统接入、测试工程——**做系统** |
-> | [`ai_coding_harness_engineering_study`](../ai_coding_harness_engineering_study) | 🟣 AI 工程 | AI 编程方法论、上下文工程、AI 工具工程化、Harness 理论、AI Coding 工具链、大模型与 Agent 开发——**用 AI 提效** |
+> | **本项目**（`java_study`） | 🔵 基础理论 | Java 语言核心、并发深度、JVM 原理、IO/NIO 体系、数据结构与算法、设计模式、计算机基础理论、信息安全基础、软件工程基础、性能工程、调试排查、前沿技术趋势——**打地基** |
+> | [`java_fullstack_ai_agent_study`](../java_fullstack_ai_agent_study) | 🟠 工程实践 | Spring 生态、分布式架构、大数据、存储中间件、风控爬虫、数据分析、多语言、**AI/Agent 应用开发（Spring AI / LangChain4j / LangGraph / AutoGen / 上下文工程落地 / Agent 编排）**、测试工程——**做系统** |
+> | [`ai_coding_harness_engineering_study`](../ai_coding_harness_engineering_study) | 🟣 AI 工程提效 | AI 编程方法论、AI 工具工程化（MCP/Skill/Hooks）、Harness 理论（Eval/LLM-as-Judge）、AI Coding 工具链（Claude Code / Cursor / Codex）、大模型理论了解——**用 AI 提效** |
 
 > 🔵 **本项目与 `java_fullstack_ai_agent_study` 的边界原则**
 >
