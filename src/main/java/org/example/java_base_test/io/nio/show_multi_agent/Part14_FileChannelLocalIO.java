@@ -1,8 +1,24 @@
 package org.example.java_base_test.io.nio.show_multi_agent;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.Files;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.SeekableByteChannel;
+import java.util.Set;
+import java.nio.file.attribute.PosixFilePermission;
 
-class Part14_FileChannelLocalIO {
+public class Part14_FileChannelLocalIO {
+
+    public static void main(String[] args) throws Exception {
+        demonstrate();
+    }
 
     static void demonstrate() throws Exception {
         System.out.println("【第十四部分：FileChannel 本地文件 IO 完整操作】");
@@ -54,6 +70,12 @@ class Part14_FileChannelLocalIO {
         System.out.println("  FileChannel readCh  = new FileInputStream(file).getChannel();");
         System.out.println("  FileChannel writeCh = new FileOutputStream(file).getChannel();");
         System.out.println("  FileChannel rwCh    = new RandomAccessFile(file, \"rw\").getChannel();");
+        System.out.println();
+        System.out.println("  // 方式三：使用 Files.newByteChannel() 返回 SeekableByteChannel");
+        System.out.println("  SeekableByteChannel sbc = Files.newByteChannel(path, options);");
+        System.out.println("  if (sbc instanceof FileChannel) {");
+        System.out.println("      FileChannel fc = (FileChannel) sbc;");
+        System.out.println("  }");
         System.out.println();
         System.out.println("  ⚠ 注意：关闭 Channel 会自动关闭关联的 Stream，反之亦然");
         System.out.println("          Stream 和 Channel 不要各自关，关一个就够了");
@@ -110,7 +132,7 @@ class Part14_FileChannelLocalIO {
 
         java.nio.file.Path tmpFile2 = java.nio.file.Files.createTempFile("fc_pos_", ".txt");
         try {
-            // 先写 "ABCDEFGHIJ"（10字节）
+            // 先写 "ABCDE  FGHIJ"（10字节）
             try (java.nio.channels.FileChannel fc =
                      java.nio.channels.FileChannel.open(tmpFile2,
                              java.nio.file.StandardOpenOption.WRITE,
@@ -203,7 +225,7 @@ class Part14_FileChannelLocalIO {
         System.out.println("  场景：两个 JVM 进程同时写同一个文件 → 数据损坏");
         System.out.println("  FileLock 是操作系统级别的锁，不同进程都能感知");
         System.out.println("  注意：同一个 JVM 内多线程用 FileLock 无效，要用 synchronized");
-        System.out.println();
+        System.out.println(    );
         System.out.println("  两种锁：");
         System.out.println("    独占锁（写锁）：fc.lock()        → 其他进程的 lock() 会阻塞");
         System.out.println("    共享锁（读锁）：fc.lock(0, Long.MAX_VALUE, true)");

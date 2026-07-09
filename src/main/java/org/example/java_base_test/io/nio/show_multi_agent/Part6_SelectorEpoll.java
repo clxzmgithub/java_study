@@ -40,13 +40,13 @@ class Part6_SelectorEpoll {
         System.out.println("      ↓");
         System.out.println("  JVM 调用 Linux epoll_wait(epfd, events, maxevents, timeout)");
         System.out.println("      ↓");
-        System.out.println("  内核检查所有注册 fd，没有就绪 → 线程挂起（进等待队列）");
+        System.out.println("  内核先检查就绪链表：有就绪fd→立即返回；无就绪→线程挂起等待");
         System.out.println("      ↓");
         System.out.println("  CPU 去干别的事（这就是单线程能管N个连接的关键！）");
         System.out.println("      ↓");
-        System.out.println("  某个 fd 就绪（网卡收到数据 → 硬件中断触发）");
+        System.out.println("  某个 fd 就绪（网卡收到数据 → 硬件中断 → 回调函数执行）");
         System.out.println("      ↓");
-        System.out.println("  内核唤醒线程，返回就绪 fd 列表");
+        System.out.println("  内核将该 fd 加入就绪链表，唤醒等待的线程");
         System.out.println("      ↓");
         System.out.println("  selector.select() 返回，值 = 就绪 fd 数量");
         System.out.println();

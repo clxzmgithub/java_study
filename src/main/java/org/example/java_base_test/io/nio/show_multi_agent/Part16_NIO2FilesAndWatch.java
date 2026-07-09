@@ -36,12 +36,12 @@ class Part16_NIO2FilesAndWatch {
 
         java.nio.file.Path p = java.nio.file.Paths.get("/Users/demo/data/test.txt");
         System.out.println("  Path p = Paths.get(\"/Users/demo/data/test.txt\")");
-        System.out.println("  p.getFileName()   = " + p.getFileName());
-        System.out.println("  p.getParent()     = " + p.getParent());
-        System.out.println("  p.getRoot()       = " + p.getRoot());
-        System.out.println("  p.getNameCount()  = " + p.getNameCount() + "  （路径分量数）");
-        System.out.println("  p.getName(1)      = " + p.getName(1) + "  （第2段路径）");
-        System.out.println("  p.isAbsolute()    = " + p.isAbsolute());
+        System.out.println("  p.getFileName()   = " + p.getFileName());      // 获取文件名：test.txt（最后一段）
+        System.out.println("  p.getParent()     = " + p.getParent());        // 获取父目录：/Users/demo/data
+        System.out.println("  p.getRoot()       = " + p.getRoot());          // 获取根目录：/（Unix系统）
+        System.out.println("  p.getNameCount()  = " + p.getNameCount() + "  （路径分量数）");  // 3个分量：Users、data、test.txt
+        System.out.println("  p.getName(1)      = " + p.getName(1) + "  （第2段路径）");        // 索引从0开始：0=Users, 1=data, 2=test.txt
+        System.out.println("  p.isAbsolute()    = " + p.isAbsolute());       // true：以 / 开头的是绝对路径
         System.out.println();
 
         // resolve：拼接路径

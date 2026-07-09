@@ -198,6 +198,69 @@ class Part18_NettyFrameDecoder {
         System.out.println("    }");
         System.out.println();
         NIODemo.printSeparator();
+        
+        // ════════════════════════════════════════════════════════════════
+        // 第五节：各方案特点对比总结
+        // ════════════════════════════════════════════════════════════════
+        System.out.println("━━━ 5. 各消息边界方案特点对比总结 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        System.out.println();
+        System.out.println("  【方案对比表】");
+        System.out.println("  ┌────────────┬──────────┬──────────┬──────────┬───────────┐");
+        System.out.println("  │   方案     │ 变长支持 │ 性能     │ 复杂度   │ 适用场景  │");
+        System.out.println("  ├────────────┼──────────┼──────────┼──────────┼───────────┤");
+        System.out.println("  │ 固定长度   │   ❌     │ ⭐⭐⭐⭐⭐│  极简    │ 定长协议  │");
+        System.out.println("  │ 分隔符     │   ✅     │ ⭐⭐⭐   │  简单    │ 文本协议  │");
+        System.out.println("  │ 长度字段   │   ✅     │ ⭐⭐⭐⭐⭐│  中等    │ 二进制协议│");
+        System.out.println("  │ 自定义协议 │   ✅     │ ⭐⭐⭐⭐ │  复杂    │ RPC框架   │");
+        System.out.println("  └────────────┴──────────┴──────────┴──────────┴───────────┘");
+        System.out.println();
+        System.out.println("  【详细对比】");
+        System.out.println();
+        System.out.println("  1️⃣  固定长度（FixedLengthFrameDecoder）");
+        System.out.println("     核心特点：每条消息必须严格等于 N 字节");
+        System.out.println("     优点：实现最简单，解码速度最快（无需解析头部）");
+        System.out.println("     缺点：消息短则浪费空间（需填充），消息长则被截断");
+        System.out.println("     典型应用：传感器数据上报、硬件通信协议");
+        System.out.println("     示例：GPS定位数据（每条固定32字节）");
+        System.out.println();
+        System.out.println("  2️⃣  分隔符（DelimiterBasedFrameDecoder / LineBasedFrameDecoder）");
+        System.out.println("     核心特点：用特殊字符（如\\n、\\r\\n）标记消息结束");
+        System.out.println("     优点：支持变长消息，人类可读，调试方便");
+        System.out.println("     缺点：消息内容不能包含分隔符（需转义），需扫描每个字节找分隔符");
+        System.out.println("     典型应用：HTTP/1.x、SMTP、FTP、Telnet 等文本协议");
+        System.out.println("     示例：HTTP请求头以\\r\\n\\r\\n结束");
+        System.out.println();
+        System.out.println("  3️⃣  长度字段（LengthFieldBasedFrameDecoder）← 工业界首选");
+        System.out.println("     核心特点：消息 = 长度头 + 消息体，先读长度再读body");
+        System.out.println("     优点：支持变长，内容可含任意字节（包括分隔符），性能最优");
+        System.out.println("     缺点：需预先知道长度字段的位置和大小，配置参数较多");
+        System.out.println("     典型应用：Dubbo、gRPC、Thrift、Kafka协议、Redis协议");
+        System.out.println("     示例：[4字节长度][N字节body]，长度值=N");
+        System.out.println();
+        System.out.println("  4️⃣  自定义协议（ReplayingDecoder / ByteToMessageDecoder）");
+        System.out.println("     核心特点：完整的协议设计，包含魔数、版本、类型、长度等字段");
+        System.out.println("     优点：最灵活，可扩展性强，支持协议演进和兼容性");
+        System.out.println("     缺点：开发成本高，需自行处理编解码逻辑");
+        System.out.println("     典型应用：自研RPC框架、游戏服务器协议、金融交易系统");
+        System.out.println("     示例：[魔数4B][版本1B][类型1B][序列号4B][长度4B][body]");
+        System.out.println();
+        System.out.println("  【选择建议】");
+        System.out.println();
+        System.out.println("  ✅ 选固定长度：消息长度固定且较短（如传感器数据）");
+        System.out.println("  ✅ 选分隔符：  文本协议、人类可读、调试友好（如HTTP）");
+        System.out.println("  ✅ 选长度字段：高性能二进制协议、通用场景（强烈推荐！）");
+        System.out.println("  ✅ 选自定义：  需要协议版本控制、复杂业务逻辑（如RPC）");
+        System.out.println();
+        System.out.println("  【性能对比（吞吐量）】");
+        System.out.println("  固定长度 > 长度字段 > 分隔符 > 自定义协议");
+        System.out.println("  （但实际差距不大，长度字段方案已足够优秀）");
+        System.out.println();
+        System.out.println("  【Netty 内置 Decoder 速查】");
+        System.out.println("  FixedLengthFrameDecoder(1024)           → 固定1024字节");
+        System.out.println("  LineBasedFrameDecoder(8192)             → 按行分割（\\n或\\r\\n）");
+        System.out.println("  DelimiterBasedFrameDecoder(8192, delim) → 自定义分隔符");
+        System.out.println("  LengthFieldBasedFrameDecoder(...)       → 长度字段（6个参数）");
+        System.out.println("  ReplayingDecoder / ByteToMessageDecoder → 自定义协议");
     }
 }
 
